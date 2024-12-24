@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ex-Mormon Black Cards</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* General Styles */
         @font-face {
@@ -73,14 +74,14 @@
             pointer-events: none; /* Make it non-interactive */
         }
 
-        #refresh-button {
+        #share-button {
             position: absolute;
-            top: 10px;
+            bottom: 10px;
             right: 10px;
             background: linear-gradient(135deg, #6a11cb, #2575fc); /* Modern gradient */
             border: none;
             border-radius: 50%;
-            width: 70px; /* Larger button */
+            width: 70px; /* Button size */
             height: 70px;
             display: flex;
             justify-content: center;
@@ -90,28 +91,19 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        #refresh-icon {
-            width: 70%; /* Modern size */
-            height: 70%;
+        #share-icon {
+            width: 60%;
+            height: 60%;
             fill: none;
-            stroke: white; /* White stroke for clean look */
+            stroke: white;
             stroke-width: 3;
             stroke-linecap: round;
             stroke-linejoin: round;
-            transition: transform 1.5s ease;
         }
 
-        #refresh-button:active #refresh-icon {
-            transform: rotate(1080deg); /* 3 full rotations */
-        }
-
-        #refresh-button:hover {
+        #share-button:hover {
             transform: scale(1.1);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        #refresh-button:active {
-            transform: scale(1.2); /* Scaling during animation */
         }
 
         #left-indicator, #right-indicator {
@@ -135,16 +127,16 @@
 <body>
     <div id="left-indicator"></div>
     <div id="right-indicator"></div>
-    <button id="refresh-button">
-        <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-        </svg>
-    </button>
     <div id="card-container">
         <div id="current-card" class="card">
             <span id="card-text" class="card-text">Loading...</span>
         </div>
     </div>
+    <button id="share-button">
+        <svg id="share-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M4 12h7V8l8 8-8 8v-4H4v-8z"/>
+        </svg>
+    </button>
     <script>
         let cards = [];
         let currentIndex = 0;
@@ -153,7 +145,7 @@
         const cardText = document.getElementById('card-text');
         const leftIndicator = document.getElementById('left-indicator');
         const rightIndicator = document.getElementById('right-indicator');
-        const refreshButton = document.getElementById('refresh-button');
+        const shareButton = document.getElementById('share-button');
 
         // Shuffle cards using Fisher-Yates
         function shuffle(array) {
@@ -200,10 +192,28 @@
             showCard(currentIndex + 1, 'right');
         });
 
-        // Refresh button reloads the app
-        refreshButton.addEventListener('click', () => {
-            currentIndex = 0;
-            location.reload();
+        // Share card as PNG
+        shareButton.addEventListener('click', async () => {
+            const canvas = await html2canvas(currentCard, { scale: 2 }); // High-resolution canvas
+            const dataUrl = canvas.toDataURL('image/png'); // Convert to PNG data URL
+
+            // Use Web Share API if supported
+            if (navigator.canShare && navigator.canShare({ files: [] })) {
+                const blob = await (await fetch(dataUrl)).blob();
+                const file = new File([blob], 'card.png', { type: 'image/png' });
+
+                navigator.share({
+                    files: [file],
+                    title: 'Shared Card',
+                    text: 'Check out this card!',
+                }).catch((error) => console.error('Share failed:', error));
+            } else {
+                // Fallback: Open PNG in a new tab for download
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = 'card.png';
+                link.click();
+            }
         });
 
         window.onload = fetchCards;
