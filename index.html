@@ -6,7 +6,6 @@
     <title>Ex-Mormon Black Cards</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* General Styles */
         @font-face {
             font-family: 'Helvetica Neue';
             font-weight: bold;
@@ -38,7 +37,7 @@
             height: 60%;
             overflow: hidden;
             cursor: pointer;
-            box-shadow: 0 0 15px #ffffff; /* Subtle glow effect */
+            box-shadow: 0 0 15px #ffffff;
         }
 
         .card {
@@ -58,7 +57,7 @@
             font-weight: bold;
         }
 
-        /* Add subtle texture to the card */
+        /* Subtle texture */
         .card::before {
             content: "";
             position: absolute;
@@ -68,20 +67,19 @@
             height: 100%;
             background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAfUlEQVR42mJgGAWDEQAmhASMQlIPEnSTAE5EUjGBD6SoScuKIJkBxaADnATgmZjhhBlTJSRZGVQjYkk5QxQqDoHYN5CqElDoig5zqioJcqHUGGl3kJUlLQ5BtFoAukTYbSHEDRLBTCUA0gZBGUJBIUJABAEAQEk64xxgbkLAAAAAElFTkSuQmCC');
             background-size: cover;
-            opacity: 0.1; /* Subtle texture */
+            opacity: 0.1;
             z-index: 1;
             border-radius: 10px;
-            pointer-events: none; /* Make it non-interactive */
+            pointer-events: none;
         }
 
-        #share-button {
+        #refresh-button, #share-button {
             position: absolute;
             bottom: 10px;
-            right: 10px;
-            background: linear-gradient(135deg, #6a11cb, #2575fc); /* Modern gradient */
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
             border: none;
             border-radius: 50%;
-            width: 70px; /* Button size */
+            width: 70px;
             height: 70px;
             display: flex;
             justify-content: center;
@@ -91,7 +89,15 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
-        #share-icon {
+        #refresh-button {
+            right: 90px;
+        }
+
+        #share-button {
+            right: 10px;
+        }
+
+        #refresh-icon, #share-icon {
             width: 60%;
             height: 60%;
             fill: none;
@@ -101,9 +107,13 @@
             stroke-linejoin: round;
         }
 
-        #share-button:hover {
+        #refresh-button:hover, #share-button:hover {
             transform: scale(1.1);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        #refresh-button:active, #share-button:active {
+            transform: scale(1.2);
         }
 
         #left-indicator, #right-indicator {
@@ -132,6 +142,11 @@
             <span id="card-text" class="card-text">Loading...</span>
         </div>
     </div>
+    <button id="refresh-button">
+        <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+        </svg>
+    </button>
     <button id="share-button">
         <svg id="share-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M4 12h7V8l8 8-8 8v-4H4v-8z"/>
@@ -145,6 +160,7 @@
         const cardText = document.getElementById('card-text');
         const leftIndicator = document.getElementById('left-indicator');
         const rightIndicator = document.getElementById('right-indicator');
+        const refreshButton = document.getElementById('refresh-button');
         const shareButton = document.getElementById('share-button');
 
         // Shuffle cards using Fisher-Yates
@@ -183,7 +199,6 @@
             }, 500);
         }
 
-        // Add event listeners for left and right indicators
         leftIndicator.addEventListener('click', () => {
             showCard(currentIndex - 1, 'left');
         });
@@ -192,12 +207,15 @@
             showCard(currentIndex + 1, 'right');
         });
 
-        // Share card as PNG
-        shareButton.addEventListener('click', async () => {
-            const canvas = await html2canvas(currentCard, { scale: 2 }); // High-resolution canvas
-            const dataUrl = canvas.toDataURL('image/png'); // Convert to PNG data URL
+        refreshButton.addEventListener('click', () => {
+            currentIndex = 0;
+            location.reload();
+        });
 
-            // Use Web Share API if supported
+        shareButton.addEventListener('click', async () => {
+            const canvas = await html2canvas(currentCard, { scale: 2 });
+            const dataUrl = canvas.toDataURL('image/png');
+
             if (navigator.canShare && navigator.canShare({ files: [] })) {
                 const blob = await (await fetch(dataUrl)).blob();
                 const file = new File([blob], 'card.png', { type: 'image/png' });
@@ -208,7 +226,6 @@
                     text: 'Check out this card!',
                 }).catch((error) => console.error('Share failed:', error));
             } else {
-                // Fallback: Open PNG in a new tab for download
                 const link = document.createElement('a');
                 link.href = dataUrl;
                 link.download = 'card.png';
