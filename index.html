@@ -37,13 +37,13 @@
             text-align: center;
             padding: 20px;
             line-height: 1.5;
-            box-sizing: border-box; /* Ensures padding stays within the rectangle */
-            width: 90%; /* Added buffer around text */
-            height: 90%; /* Ensures text does not touch the edges */
+            box-sizing: border-box;
+            width: 90%;
+            height: 90%;
             position: absolute;
             opacity: 1;
             transform: translateX(0);
-            transition: opacity 1s ease, transform 1s ease; /* Smooth transitions */
+            transition: opacity 1s ease, transform 1s ease;
         }
 
         .hidden-left {
@@ -58,7 +58,7 @@
 
         .fade-in {
             opacity: 1;
-            transform: translateX(0); /* No movement during entrance */
+            transform: translateX(0);
         }
 
         .fade-out {
@@ -167,6 +167,17 @@
             }
         }
 
+        function repositionCard(card, direction) {
+            // Reposition the card to the opposite side after it moves off-screen
+            if (direction === "left") {
+                card.classList.remove("hidden-left");
+                card.classList.add("hidden-right");
+            } else if (direction === "right") {
+                card.classList.remove("hidden-right");
+                card.classList.add("hidden-left");
+            }
+        }
+
         function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
@@ -181,12 +192,16 @@
             currentCard.classList.add(exitClass, "fade-out");
 
             setTimeout(() => {
-                // After the current card has exited, fade in the 
+                // Reposition the current card for reuse
+                repositionCard(currentCard, direction);
+
+                // After the current card has exited, fade in the new card
+                nextCard.classList.remove("fade-out");
                 nextCard.classList.add("fade-in");
 
                 // Swap current and next card roles
                 currentCard.textContent = nextCard.textContent;
-                currentCard.classList.remove("hidden-right", "hidden-left", "fade-out");
+                currentCard.classList.remove("hidden-left", "hidden-right", "fade-out");
                 currentCard.classList.add("fade-in");
 
                 nextCard.classList.remove("fade-in");
@@ -195,11 +210,11 @@
         }
 
         prevButton.addEventListener("click", () => {
-            showCard(currentIndex + 1, "right");
+            showCard(currentIndex - 1, "right");
         });
 
         nextButton.addEventListener("click", () => {
-            showCard(currentIndex - 1, "left");
+            showCard(currentIndex + 1, "left");
         });
 
         refreshButton.addEventListener("click", () => {
