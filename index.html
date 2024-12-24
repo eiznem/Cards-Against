@@ -143,7 +143,7 @@
             bottom: 5px;
             right: 10px;
             font-size: 10px;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.25);
         }
     </style>
 </head>
@@ -220,17 +220,17 @@
             // Animate the outgoing card
             currentCard.className = `card ${exitClass}`;
 
-            // Start incoming card immediately
-            nextCard.className = `card ${enterClass}`;
-
             // Finalize swap after animation
             setTimeout(() => {
-                currentCard.textContent = nextCard.textContent;
-                currentCard.className = "card";
-                nextCard.className = "card";
-                previousIndex = currentIndex;
-                currentIndex = index;
-            }, 600);
+                nextCard.className = `card ${enterClass}`;
+                setTimeout(() => {
+                    currentCard.textContent = nextCard.textContent;
+                    currentCard.className = "card";
+                    nextCard.className = "card";
+                    previousIndex = currentIndex;
+                    currentIndex = index;
+                }, 600);
+            }, 0); // Ensure immediate outgoing animation
         }
 
         prevButton.addEventListener("click", () => {
