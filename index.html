@@ -8,10 +8,11 @@
     <meta name="theme-color" content="#000000">
 
     <style>
+        /* General Styles */
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: radial-gradient(circle, black 60%, #333333 100%);
+            background: radial-gradient(circle, black 60%, #222222 100%);
             color: white;
             display: flex;
             justify-content: center;
@@ -37,7 +38,7 @@
 
         .card {
             width: 95%;
-            height: calc(100% - 20px); /* Prevents cutoff */
+            height: calc(100% - 20px);
             position: absolute;
             display: flex;
             justify-content: center;
@@ -57,12 +58,13 @@
             transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
+        /* Refresh Button */
         #refresh-button {
             position: absolute;
             top: 10px;
             right: 10px;
-            background-color: chartreuse; /* Background color */
-            border: none;
+            background-color: white;
+            border: 2px solid chartreuse;
             border-radius: 50%;
             width: 50px;
             height: 50px;
@@ -75,19 +77,15 @@
         }
 
         #refresh-button:hover {
-            transform: scale(1.1); /* Slight zoom effect on hover */
-            box-shadow: 0 0 15px white;
-        }
-
-        #refresh-button:active {
-            transform: scale(0.9); /* Scale down on click */
+            transform: scale(1.1);
+            box-shadow: 0 0 15px chartreuse;
         }
 
         #refresh-icon {
             width: 60%;
             height: 60%;
-            fill: none; /* No fill for the icon */
-            stroke: white; /* White outline */
+            fill: none;
+            stroke: chartreuse;
             stroke-width: 2;
             stroke-linecap: round;
             stroke-linejoin: round;
@@ -95,7 +93,44 @@
         }
 
         #refresh-button:active #refresh-icon {
-            transform: rotate(360deg); /* Spin the icon */
+            transform: rotate(360deg);
+        }
+
+        /* Responsiveness for Different Devices */
+        @media (max-width: 396px) { /* Apple Watch */
+            .card {
+                font-size: 1rem; /* Smaller text */
+                padding: 10px;
+            }
+
+            #refresh-button {
+                width: 30px;
+                height: 30px;
+                top: 5px;
+                right: 5px;
+            }
+
+            #refresh-icon {
+                width: 80%;
+                height: 80%;
+            }
+        }
+
+        @media (min-width: 1024px) { /* iPads and MacBooks */
+            .card {
+                font-size: 3rem;
+                padding: 30px;
+            }
+
+            #refresh-button {
+                width: 60px;
+                height: 60px;
+            }
+
+            #refresh-icon {
+                width: 70%;
+                height: 70%;
+            }
         }
     </style>
 </head>
@@ -120,7 +155,7 @@
         const cardContainer = document.getElementById('card-container');
         const refreshButton = document.getElementById('refresh-button');
 
-        // Shuffle the cards array using Fisher-Yates algorithm
+        // Shuffle cards using Fisher-Yates
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -129,16 +164,13 @@
             return array;
         }
 
-        // Fetch the CSV file and parse the data
+        // Fetch cards from CSV
         async function fetchCards() {
             const response = await fetch('cards.csv');
             const text = await response.text();
             cards = text.split('\n').map(card => card.trim()).filter(card => card !== "");
 
-            // Shuffle the cards for random order
             cards = shuffle(cards);
-
-            // Load the first card
             if (cards.length > 0) {
                 cardText.textContent = cards[currentIndex];
             }
@@ -147,45 +179,35 @@
         function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
-            // Add fade and wipe effect
             cardText.style.opacity = 0;
             cardText.style.transform = `translateX(${direction === 'right' ? '100%' : '-100%'})`;
 
             setTimeout(() => {
-                // Update the card content
                 cardText.textContent = cards[index];
-
-                // Reset the position and fade back in
                 cardText.style.transform = `translateX(${direction === 'right' ? '-100%' : '100%'})`;
                 cardText.style.opacity = 1;
                 cardText.style.transform = 'translateX(0)';
-
-                // Update the index
                 currentIndex = index;
-            }, 500); // Matches the transition duration
+            }, 500);
         }
 
-        // Handle taps to navigate cards
         cardContainer.addEventListener('click', (e) => {
             const rect = cardContainer.getBoundingClientRect();
             const x = e.clientX - rect.left;
 
             if (x < rect.width / 3) {
-                // Tap on the left third -> Go to the previous card
                 showCard(currentIndex - 1, 'left');
             } else if (x > (2 * rect.width) / 3) {
-                // Tap on the right third -> Go to the next card
                 showCard(currentIndex + 1, 'right');
             }
         });
 
-        // Refresh the app and clear session cache
         refreshButton.addEventListener('click', () => {
+            if (navigator.vibrate) navigator.vibrate(100); // Vibrate if supported
             currentIndex = 0;
             location.reload();
         });
 
-        // Fetch cards on page load
         window.onload = fetchCards;
     </script>
 </body>
