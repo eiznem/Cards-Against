@@ -66,13 +66,13 @@
             background-color: white;
             border: 2px solid chartreuse;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
@@ -82,55 +82,22 @@
         }
 
         #refresh-icon {
-            width: 60%;
-            height: 60%;
+            width: 90%; /* Larger icon size */
+            height: 90%;
             fill: none;
             stroke: chartreuse;
-            stroke-width: 2;
+            stroke-width: 3; /* Thicker stroke */
             stroke-linecap: round;
             stroke-linejoin: round;
-            transition: transform 0.5s ease;
+            transition: transform 1.5s ease; /* Exaggerated spin animation */
         }
 
         #refresh-button:active #refresh-icon {
-            transform: rotate(360deg);
+            transform: rotate(1080deg); /* 3 full rotations */
         }
 
-        /* Responsiveness for Different Devices */
-        @media (max-width: 396px) { /* Apple Watch */
-            .card {
-                font-size: 1rem; /* Smaller text */
-                padding: 10px;
-            }
-
-            #refresh-button {
-                width: 30px;
-                height: 30px;
-                top: 5px;
-                right: 5px;
-            }
-
-            #refresh-icon {
-                width: 80%;
-                height: 80%;
-            }
-        }
-
-        @media (min-width: 1024px) { /* iPads and MacBooks */
-            .card {
-                font-size: 3rem;
-                padding: 30px;
-            }
-
-            #refresh-button {
-                width: 60px;
-                height: 60px;
-            }
-
-            #refresh-icon {
-                width: 70%;
-                height: 70%;
-            }
+        #refresh-button:active {
+            transform: scale(1.2); /* Button scaling during animation */
         }
     </style>
 </head>
