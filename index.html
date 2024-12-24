@@ -43,7 +43,7 @@
             position: absolute;
             opacity: 1;
             transform: translateX(0);
-            transition: transform 1s ease, opacity 1s ease;
+            transition: transform 1s ease, opacity 1s ease; /* Synchronized fade and move */
         }
 
         /* Outgoing Card */
@@ -77,6 +77,15 @@
         .off-screen-right {
             opacity: 0;
             transform: translateX(100%);
+        }
+
+        /* Version Label */
+        .version-label {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5); /* Subtle, semi-transparent text */
         }
 
         /* Navigation Buttons */
@@ -135,6 +144,7 @@
 </head>
 <body>
     <div id="card-container">
+        <div class="version-label">Version 1.0.1</div>
         <div id="current-card" class="card">Loading...</div>
         <div id="next-card" class="card"></div>
     </div>
