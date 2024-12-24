@@ -56,13 +56,24 @@
             transform: translateX(100%);
         }
 
-        .fade-in {
+        .fade-in-left {
             opacity: 1;
             transform: translateX(0);
         }
 
-        .fade-out {
+        .fade-in-right {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .fade-out-left {
             opacity: 0;
+            transform: translateX(-100%);
+        }
+
+        .fade-out-right {
+            opacity: 0;
+            transform: translateX(100%);
         }
 
         /* Navigation Buttons */
@@ -121,8 +132,8 @@
 </head>
 <body>
     <div id="card-container">
-        <div id="current-card" class="card fade-in">Loading...</div>
-        <div id="next-card" class="card fade-out"></div>
+        <div id="current-card" class="card">Loading...</div>
+        <div id="next-card" class="card"></div>
     </div>
 
     <!-- Navigation Buttons -->
@@ -167,46 +178,33 @@
             }
         }
 
-        function repositionCard(card, direction) {
-            // Reposition the card to the opposite side after it moves off-screen
-            if (direction === "left") {
-                card.classList.remove("hidden-left");
-                card.classList.add("hidden-right");
-            } else if (direction === "right") {
-                card.classList.remove("hidden-right");
-                card.classList.add("hidden-left");
-            }
-        }
-
         function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
-            // Determine the exit direction
-            const exitClass = direction === "left" ? "hidden-left" : "hidden-right";
+            // Set exit class for the current card
+            const exitClass = direction === "left" ? "fade-out-left" : "fade-out-right";
+            const enterClass = direction === "left" ? "fade-in-right" : "fade-in-left";
 
-            // Set the next card's content
+            // Set the next card's content and prepare it for entry
             nextCard.textContent = cards[index];
+            nextCard.className = `card ${direction === "left" ? "hidden-right" : "hidden-left"}`;
 
-            // Animate the current card out (fade-out + movement)
-            currentCard.classList.remove("fade-in");
-            currentCard.classList.add(exitClass, "fade-out");
+            // Animate the current card out
+            currentCard.classList.add(exitClass);
 
+            // Wait for the current card's exit animation to complete
             setTimeout(() => {
-                // Reposition the current card for reuse
-                repositionCard(currentCard, direction);
+                // Animate the next card in
+                nextCard.className = `card ${enterClass}`;
 
-                // After the current card has exited, fade in the new card
-                nextCard.classList.remove("fade-out");
-                nextCard.classList.add("fade-in");
-
-                // Swap current and next card roles
-                currentCard.textContent = nextCard.textContent;
-                currentCard.classList.remove("hidden-left", "hidden-right", "fade-out");
-                currentCard.classList.add("fade-in");
-
-                nextCard.classList.remove("fade-in");
-                currentIndex = index;
-            }, 1000); // Wait for fade-out + movement to complete
+                // Swap roles: make the next card the current card
+                setTimeout(() => {
+                    currentCard.textContent = nextCard.textContent;
+                    currentCard.className = "card";
+                    nextCard.className = "card";
+                    currentIndex = index;
+                }, 1000); // Wait for the next card's fade-in to complete
+            }, 1000); // Wait for the current card's fade-out to complete
         }
 
         prevButton.addEventListener("click", () => {
