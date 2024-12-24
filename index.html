@@ -9,7 +9,8 @@
     <style>
         body {
             margin: 0;
-            font-family: 'Helvetica Neue';
+            font-family: 'Helvetica Neue', sans-serif;
+            font-weight: bold;
             background: radial-gradient(circle, #111111, #222222, #444444);
             color: white;
             display: flex;
@@ -23,7 +24,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px; /* Adds space between buttons */
+            gap: 20px;
         }
 
         .deck-button {
@@ -50,7 +51,7 @@
             position: relative;
             width: 60%;
             max-width: 400px;
-            aspect-ratio: 1 / 1.5;
+            aspect-ratio: 1 / 1.33; /* Adjusted aspect ratio */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -61,7 +62,7 @@
         }
 
         .card {
-            font-size: 1.5rem;
+            font-size: calc(2rem * var(--scale-factor, 1)); /* Dynamically scale font size */
             text-align: center;
             padding: 20px;
             line-height: 1.3;
@@ -101,11 +102,11 @@
         }
 
         .nav-button.left {
-            left: calc(25% - 25px);
+            left: 15%; /* Adjusted centering */
         }
 
         .nav-button.right {
-            right: calc(25% - 25px);
+            right: 15%; /* Adjusted centering */
         }
 
         .nav-button:active {
@@ -160,6 +161,20 @@
             left: 10px;
             font-size: 10px;
             color: rgba(255, 255, 255, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                font-size: calc(1.5rem * var(--scale-factor, 1)); /* Adjust font size for iPhone */
+            }
+
+            .nav-button.left {
+                left: 10%; /* Adjusted centering for mobile */
+            }
+
+            .nav-button.right {
+                right: 10%; /* Adjusted centering for mobile */
+            }
         }
     </style>
 </head>
