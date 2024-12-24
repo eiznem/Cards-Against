@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ex-Mormon Black Cards</title>
-    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         body {
@@ -35,17 +32,30 @@
             background-color: black;
         }
 
-        .card-image {
-            width: 100%;
-            height: 100%;
-            border-radius: 15px;
-            position: absolute;
+        #card-text {
+            font-size: 2rem;
+            text-align: center;
+            padding: 20px;
+            line-height: 1.5;
+            width: 90%;
+            opacity: 1;
+            position: relative;
+            transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth fade and slide */
+        }
+
+        .hidden-left {
             opacity: 0;
-            transition: opacity 0.5s ease; /* Fade-in/Fade-out only */
+            transform: translateX(-100%);
+        }
+
+        .hidden-right {
+            opacity: 0;
+            transform: translateX(100%);
         }
 
         .visible {
             opacity: 1;
+            transform: translateX(0);
         }
 
         /* Navigation Buttons */
@@ -57,7 +67,7 @@
             border: none;
             color: white;
             cursor: pointer;
-            font-size: 2rem; /* Reduced size */
+            font-size: 2rem; /* Adjusted size */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -75,27 +85,20 @@
             color: #aaaaaa;
         }
 
-        /* Control Buttons (Refresh, Share) */
-        .button {
+        /* Refresh Button */
+        #refresh-button {
             position: absolute;
-            top: 10px; /* Reduced spacing */
+            top: 10px;
+            left: 10px; /* Closer to edge */
             background: linear-gradient(135deg, #6A11CB, #2575FC); /* Purple gradient */
             border: none;
             border-radius: 50%;
-            width: 40px; /* Smaller button */
-            height: 40px; /* Smaller button */
+            width: 40px;
+            height: 40px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-        }
-
-        #refresh-button {
-            left: 10px; /* Closer to edge */
-        }
-
-        #share-button {
-            right: 10px; /* Closer to edge */
         }
 
         .button-icon {
@@ -107,30 +110,21 @@
             stroke-linecap: round;
             stroke-linejoin: round;
         }
-
-        #share-icon {
-            stroke-width: 3;
-        }
     </style>
 </head>
 <body>
     <div id="card-container">
-        <img id="current-card" class="card-image visible" alt="Card Image" src="">
+        <div id="card-text" class="visible">Loading...</div>
     </div>
 
     <!-- Navigation Buttons -->
     <button class="nav-button left" id="prev-button">&laquo;</button>
     <button class="nav-button right" id="next-button">&raquo;</button>
 
-    <!-- Refresh and Share Buttons -->
-    <button id="refresh-button" class="button">
+    <!-- Refresh Button -->
+    <button id="refresh-button">
         <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-        </svg>
-    </button>
-    <button id="share-button" class="button">
-        <svg class="button-icon" id="share-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12 16V4M12 4l6 6M12 4l-6 6M4 20h16v-2H4v2z" />
         </svg>
     </button>
 
@@ -138,12 +132,10 @@
         let cards = [];
         let currentIndex = 0;
 
-        const cardContainer = document.getElementById("card-container");
-        const currentCard = document.getElementById("current-card");
-        const refreshButton = document.getElementById("refresh-button");
-        const shareButton = document.getElementById("share-button");
+        const cardText = document.getElementById("card-text");
         const prevButton = document.getElementById("prev-button");
         const nextButton = document.getElementById("next-button");
+        const refreshButton = document.getElementById("refresh-button");
 
         // Shuffle cards using Fisher-Yates
         function shuffle(array) {
@@ -162,82 +154,40 @@
             cards = shuffle(cards);
 
             if (cards.length > 0) {
-                renderCard(cards[currentIndex], currentCard);
+                cardText.textContent = cards[currentIndex];
             }
         }
 
-        // Render card to an image
-        async function renderCard(text, cardElement) {
-            const tempDiv = document.createElement("div");
-            tempDiv.style.position = "absolute";
-            tempDiv.style.width = "66.6%";
-            tempDiv.style.height = "50%";
-            tempDiv.style.backgroundColor = "black";
-            tempDiv.style.color = "white";
-            tempDiv.style.borderRadius = "15px";
-            tempDiv.style.display = "flex";
-            tempDiv.style.justifyContent = "center";
-            tempDiv.style.alignItems = "center";
-            tempDiv.style.padding = "20px";
-            tempDiv.style.textAlign = "center";
-            tempDiv.style.fontSize = "1.8rem";
-            tempDiv.style.lineHeight = "1.5";
-            tempDiv.textContent = text;
-
-            document.body.appendChild(tempDiv);
-
-            const canvas = await html2canvas(tempDiv, {
-                backgroundColor: null,
-                scale: 2,
-            });
-            cardElement.src = canvas.toDataURL("image/png");
-            tempDiv.remove();
-            cardElement.classList.add("visible"); // Fade-in
-        }
-
-        function showCard(index) {
+        function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
-            currentCard.classList.remove("visible"); // Fade-out
+            // Apply exit animation
+            cardText.classList.remove("visible");
+            cardText.classList.add(direction === "left" ? "hidden-right" : "hidden-left");
+
             setTimeout(() => {
-                renderCard(cards[index], currentCard).then(() => {
-                    currentIndex = index;
-                });
-            }, 500); // Wait for fade-out
+                // Update card content
+                cardText.textContent = cards[index];
+
+                // Apply entry animation
+                cardText.classList.remove("hidden-left", "hidden-right");
+                cardText.classList.add("visible");
+
+                currentIndex = index;
+            }, 500); // Duration of fade-out
         }
 
         prevButton.addEventListener("click", () => {
-            showCard(currentIndex - 1);
+            showCard(currentIndex - 1, "right");
         });
 
         nextButton.addEventListener("click", () => {
-            showCard(currentIndex + 1);
+            showCard(currentIndex + 1, "left");
         });
 
         refreshButton.addEventListener("click", () => {
             currentIndex = 0;
             location.reload();
-        });
-
-        shareButton.addEventListener("click", async () => {
-            const link = currentCard.src;
-
-            if (navigator.canShare && navigator.canShare({ files: [] })) {
-                const blob = await (await fetch(link)).blob();
-                const file = new File([blob], "card.png", { type: "image/png" });
-
-                try {
-                    await navigator.share({
-                        files: [file],
-                        title: "Shared Card",
-                        text: "Check out this card!",
-                    });
-                } catch (error) {
-                    console.error("Share failed:", error);
-                }
-            } else {
-                alert("Sharing is not supported on this device.");
-            }
         });
 
         window.onload = fetchCards;
