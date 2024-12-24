@@ -32,91 +32,87 @@
             width: 90%;
             height: 60%;
             overflow: hidden;
-            cursor: pointer;
+            box-shadow: 0 0 15px white;
         }
 
-        .card {
-            width: 95%;
-            height: calc(100% - 20px);
-            position: absolute;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .card-text {
             font-size: 2rem;
             text-align: center;
-            background-color: black;
-            border-radius: 10px;
-            box-shadow: 0 0 15px white;
-            padding: 20px;
-            box-sizing: border-box;
             transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        /* Refresh Button */
-        #refresh-button {
+        /* Modern Buttons */
+        .button {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: white;
-            border: 2px solid chartreuse;
+            bottom: 20px;
+            background: linear-gradient(135deg, #4CAF50, #81C784); /* Modern gradient */
+            border: none;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.3);
         }
 
-        #refresh-button:hover {
+        .button:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 15px chartreuse;
+            box-shadow: 0 6px 15px rgba(255, 255, 255, 0.5);
         }
 
-        #refresh-icon {
-            width: 90%;
-            height: 90%;
+        #refresh-button {
+            right: 100px;
+        }
+
+        #share-button {
+            right: 20px;
+        }
+
+        .button-icon {
+            width: 50%;
+            height: 50%;
             fill: none;
-            stroke: chartreuse;
-            stroke-width: 3;
+            stroke: white;
+            stroke-width: 2.5;
             stroke-linecap: round;
             stroke-linejoin: round;
-            transition: transform 1.5s ease;
         }
 
-        #refresh-button:active #refresh-icon {
-            transform: rotate(1080deg);
-        }
-
-        #refresh-button:active {
-            transform: scale(1.2);
+        #refresh-button:active .button-icon {
+            transform: rotate(360deg);
+            transition: transform 1s ease;
         }
     </style>
 </head>
 <body>
-    <button id="refresh-button">
-        <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <div id="card-container">
+        <span id="card-text" class="card-text">Loading...</span>
+    </div>
+
+    <button id="refresh-button" class="button">
+        <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
         </svg>
     </button>
-    <div id="card-container">
-        <div id="current-card" class="card">
-            <span id="card-text">Loading...</span>
-        </div>
-    </div>
+    <button id="share-button" class="button">
+        <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M4 12h7V8l8 8-8 8v-4H4v-8z"/>
+        </svg>
+    </button>
 
     <script>
         let cards = [];
         let currentIndex = 0;
 
+        const cardText = document.getElementById("card-text");
         const cardContainer = document.getElementById("card-container");
-        const currentCard = document.getElementById("current-card");
-        const cardText = currentCard.querySelector("#card-text");
         const refreshButton = document.getElementById("refresh-button");
+        const shareButton = document.getElementById("share-button");
 
-        // Shuffle cards using Fisher-Yates algorithm
+        // Shuffle cards using Fisher-Yates
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -140,26 +136,22 @@
         function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
-            const newCard = currentCard.cloneNode(true);
-            newCard.style.transform = `translateX(${direction === "right" ? "100%" : "-100%"})`;
-            newCard.style.opacity = 0;
-            newCard.querySelector("#card-text").textContent = cards[index];
+            // Animate text out
+            cardText.style.opacity = 0;
+            cardText.style.transform = `translateX(${direction === "right" ? "-100%" : "100%"})`;
 
-            cardContainer.appendChild(newCard);
-
-            // Animate cards
             setTimeout(() => {
-                currentCard.style.transform = `translateX(${direction === "right" ? "-100%" : "100%"})`;
-                currentCard.style.opacity = 0;
+                // Change text and animate in
+                cardText.textContent = cards[index];
+                cardText.style.transform = `translateX(${direction === "right" ? "100%" : "-100%"})`;
 
-                newCard.style.transform = "translateX(0)";
-                newCard.style.opacity = 1;
+                setTimeout(() => {
+                    cardText.style.transform = "translateX(0)";
+                    cardText.style.opacity = 1;
+                }, 50);
 
                 currentIndex = index;
-
-                // Remove the old card after animation
-                setTimeout(() => currentCard.remove(), 500);
-            }, 50);
+            }, 500);
         }
 
         cardContainer.addEventListener("click", (e) => {
@@ -174,9 +166,24 @@
         });
 
         refreshButton.addEventListener("click", () => {
-            if (navigator.vibrate) navigator.vibrate(100); // Vibrate on refresh if supported
             currentIndex = 0;
             location.reload();
+        });
+
+        shareButton.addEventListener("click", async () => {
+            const textToShare = cards[currentIndex];
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        text: `Check out this card: ${textToShare}`,
+                        title: "Ex-Mormon Black Card",
+                    });
+                } catch (err) {
+                    console.error("Share failed:", err);
+                }
+            } else {
+                alert("Sharing not supported on this device.");
+            }
         });
 
         window.onload = fetchCards;
