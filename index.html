@@ -52,8 +52,8 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background-color: white;
-            border: 4px solid chartreuse; /* Larger border */
+            background: linear-gradient(135deg, #6a11cb, #2575fc); /* Modern gradient */
+            border: none;
             border-radius: 50%;
             width: 70px; /* Larger button */
             height: 70px;
@@ -62,14 +62,14 @@
             align-items: center;
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
 
         #refresh-icon {
-            width: 100%; /* Larger icon */
-            height: 100%;
+            width: 70%; /* Modern size */
+            height: 70%;
             fill: none;
-            stroke: chartreuse;
+            stroke: white; /* White stroke for clean look */
             stroke-width: 3;
             stroke-linecap: round;
             stroke-linejoin: round;
@@ -82,41 +82,30 @@
 
         #refresh-button:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 15px chartreuse;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
         }
 
         #refresh-button:active {
             transform: scale(1.2); /* Scaling during animation */
         }
 
-        /* Left Indicator */
-        #left-indicator {
+        #left-indicator, #right-indicator {
             position: absolute;
-            left: 10px;
             top: 50%;
             transform: translateY(-50%);
-            width: 30px;
-            height: 30px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FFFFFF" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>') no-repeat center;
-            background-size: contain;
-            opacity: 0.5; /* Default opacity */
+            width: 50%;
+            height: 100%;
             cursor: pointer;
-            transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
-        /* Right Indicator */
+        #left-indicator {
+            left: 0;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.1), transparent);
+        }
+
         #right-indicator {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 30px;
-            height: 30px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FFFFFF" d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>') no-repeat center;
-            background-size: contain;
-            opacity: 0.5; /* Default opacity */
-            cursor: pointer;
-            transition: transform 0.2s ease, opacity 0.2s ease;
+            right: 0;
+            background: linear-gradient(to left, rgba(255, 255, 255, 0.1), transparent);
         }
     </style>
 </head>
@@ -180,30 +169,11 @@
             }, 500);
         }
 
-        // Add touch feedback for the left indicator
-        leftIndicator.addEventListener('touchstart', () => {
-            leftIndicator.style.opacity = '1';
-            leftIndicator.style.transform = 'translateY(-50%) scale(1.2)';
-        });
-        leftIndicator.addEventListener('touchend', () => {
-            leftIndicator.style.opacity = '0.5';
-            leftIndicator.style.transform = 'translateY(-50%) scale(1)';
-            showCard(currentIndex - 1, 'left');
-        });
-
-        // Add touch feedback for the right indicator
-        rightIndicator.addEventListener('touchstart', () => {
-            rightIndicator.style.opacity = '1';
-            rightIndicator.style.transform = 'translateY(-50%) scale(1.2)';
-        });
-        rightIndicator.addEventListener('touchend', () => {
-            rightIndicator.style.opacity = '0.5';
-            rightIndicator.style.transform = 'translateY(-50%) scale(1)';
-            showCard(currentIndex + 1, 'right');
-        });
+        // Add touch and click handling for indicators
+        leftIndicator.addEventListener('click', () => showCard(currentIndex - 1, 'left'));
+        rightIndicator.addEventListener('click', () => showCard(currentIndex + 1, 'right'));
 
         refreshButton.addEventListener('click', () => {
-            if (navigator.vibrate) navigator.vibrate(100); // Vibrate if supported
             currentIndex = 0;
             location.reload();
         });
