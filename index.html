@@ -7,19 +7,11 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
 
-    <!-- Required for iOS PWA -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Black Cards">
-
-    <!-- Icons for iOS -->
-    <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Cards_Against_Humanity_logo.png/512px-Cards_Against_Humanity_logo.png">
-
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #333333; /* Updated page background color */
+            background: radial-gradient(circle, black 60%, #333333 100%);
             color: white;
             display: flex;
             justify-content: center;
@@ -32,7 +24,7 @@
         #card-container {
             text-align: center;
             position: relative;
-            background-color: black; /* Card background remains black */
+            background-color: black;
             border-radius: 10px;
             display: flex;
             justify-content: center;
@@ -65,40 +57,33 @@
             transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        #refresh-button, #fullscreen-button {
+        #refresh-button {
             position: absolute;
             top: 10px;
-            background-color: white;
-            color: black;
+            right: 10px;
+            background: none;
             border: none;
-            border-radius: 50%;
+            cursor: pointer;
             width: 40px;
             height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 18px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
-        #refresh-button {
-            right: 10px;
-            border: 2px solid chartreuse; /* Chartreuse border */
+        #refresh-icon {
+            width: 100%;
+            height: 100%;
+            display: block;
+            transition: transform 0.5s ease;
         }
 
-        #fullscreen-button {
-            left: 10px;
-        }
-
-        #refresh-button:hover, #fullscreen-button:hover {
-            background-color: gray;
-            color: white;
+        #refresh-button:active #refresh-icon {
+            transform: rotate(360deg); /* Spin the icon */
         }
     </style>
 </head>
 <body>
-    <button id="refresh-button">🔄</button>
+    <button id="refresh-button">
+        <img id="refresh-icon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAIAAADwf7zUAAEAAElEQVR4nOz92ZfsSHIfDJqZOyIi89" alt="Refresh Icon">
+    </button>
     <div id="card-container">
         <div id="current-card" class="card">
             <span id="card-text" class="card-text">Loading...</span>
@@ -113,20 +98,6 @@
         const cardText = document.getElementById('card-text');
         const cardContainer = document.getElementById('card-container');
         const refreshButton = document.getElementById('refresh-button');
-
-        // Add fullscreen button if on desktop
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        if (!isMobile) {
-            const fullscreenButton = document.createElement('button');
-            fullscreenButton.id = 'fullscreen-button';
-            fullscreenButton.innerHTML = '⛶';
-            fullscreenButton.addEventListener('click', () => {
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen();
-                }
-            });
-            document.body.appendChild(fullscreenButton);
-        }
 
         // Shuffle the cards array using Fisher-Yates algorithm
         function shuffle(array) {
