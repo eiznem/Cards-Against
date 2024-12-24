@@ -26,7 +26,6 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
-            perspective: 1500px; /* Enables 3D transformations */
         }
 
         #card-container {
@@ -40,6 +39,7 @@
             width: 90%;
             height: 55%;
             overflow: hidden;
+            cursor: pointer;
         }
 
         .card {
@@ -54,20 +54,14 @@
             background-color: black;
             border-radius: 10px;
             box-shadow: 0 0 10px white;
-            backface-visibility: hidden; /* Hides the back of the card */
-            transform-origin: right center;
-            transition: transform 0.3s ease-out;
-        }
-
-        .card.next {
-            transform-origin: left center;
+            opacity: 1;
+            transition: opacity 0.5s ease, background-color 0.5s ease;
         }
     </style>
 </head>
 <body>
     <div id="card-container">
         <div id="current-card" class="card">Loading...</div>
-        <div id="next-card" class="card"></div>
     </div>
 
     <script>
@@ -75,7 +69,7 @@
         let currentIndex = 0;
 
         const currentCard = document.getElementById('current-card');
-        const nextCard = document.getElementById('next-card');
+        const cardContainer = document.getElementById('card-container');
 
         // Fetch the CSV file and parse the data
         async function fetchCards() {
@@ -89,40 +83,36 @@
             }
         }
 
-        function showCard(index, direction) {
+        function showCard(index) {
             if (index < 0 || index >= cards.length) return;
 
-            nextCard.textContent = cards[index];
-            nextCard.style.transform = `rotateY(${direction === 'left' ? '-180deg' : '180deg'})`;
+            // Fade out the current card
+            currentCard.style.opacity = 0;
 
             setTimeout(() => {
-                currentCard.style.transform = `rotateY(${direction === 'left' ? '180deg' : '-180deg'})`;
-                nextCard.style.transform = 'rotateY(0deg)';
+                // Update the card content
+                currentCard.textContent = cards[index];
+                currentCard.style.backgroundColor = 'black';
 
-                setTimeout(() => {
-                    currentCard.textContent = cards[index];
-                    currentCard.style.transform = 'rotateY(0deg)';
-                }, 300);
-            }, 50);
+                // Fade in the new card
+                currentCard.style.opacity = 1;
 
-            currentIndex = index;
+                // Update the index
+                currentIndex = index;
+            }, 500); // Matches the transition duration
         }
 
-        // Swipe gestures
-        let startX = 0;
-        document.getElementById('card-container').addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-        });
+        // Handle taps to navigate cards
+        cardContainer.addEventListener('click', (e) => {
+            const rect = cardContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
 
-        document.getElementById('card-container').addEventListener('touchend', (e) => {
-            const endX = e.changedTouches[0].clientX;
-
-            if (startX - endX > 50) {
-                // Swipe left
-                showCard(currentIndex + 1, 'left');
-            } else if (endX - startX > 50) {
-                // Swipe right
-                showCard(currentIndex - 1, 'right');
+            if (x < rect.width / 3) {
+                // Tap on the left third -> Go to the previous card
+                showCard(currentIndex - 1);
+            } else if (x > (2 * rect.width) / 3) {
+                // Tap on the right third -> Go to the next card
+                showCard(currentIndex + 1);
             }
         });
 
