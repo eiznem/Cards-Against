@@ -26,6 +26,7 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
+            position: relative;
         }
 
         #card-container {
@@ -37,13 +38,13 @@
             justify-content: center;
             align-items: center;
             width: 90%;
-            height: 60%; /* Increased height to 60% */
+            height: 60%;
             overflow: hidden;
             cursor: pointer;
         }
 
         .card {
-            width: 95%; /* Increased card width to 95% */
+            width: 95%;
             height: 100%;
             position: absolute;
             display: flex;
@@ -53,15 +54,39 @@
             text-align: center;
             background-color: black;
             border-radius: 10px;
-            box-shadow: 0 0 15px white; /* Ensures shadow is more prominent */
+            box-shadow: 0 0 15px white;
             opacity: 1;
             transition: opacity 0.5s ease, background-color 0.5s ease;
-            padding: 20px; /* Adds margin inside the card for the text */
-            box-sizing: border-box; /* Ensures padding doesn't increase size */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #refresh-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: white;
+            color: black;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        #refresh-button:hover {
+            background-color: gray;
+            color: white;
         }
     </style>
 </head>
 <body>
+    <button id="refresh-button">🔄</button>
     <div id="card-container">
         <div id="current-card" class="card">Loading...</div>
     </div>
@@ -72,12 +97,25 @@
 
         const currentCard = document.getElementById('current-card');
         const cardContainer = document.getElementById('card-container');
+        const refreshButton = document.getElementById('refresh-button');
+
+        // Shuffle the cards array using Fisher-Yates algorithm
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
 
         // Fetch the CSV file and parse the data
         async function fetchCards() {
             const response = await fetch('cards.csv');
             const text = await response.text();
             cards = text.split('\n').map(card => card.trim()).filter(card => card !== "");
+
+            // Shuffle the cards for random order
+            cards = shuffle(cards);
 
             // Load the first card
             if (cards.length > 0) {
@@ -116,6 +154,15 @@
                 // Tap on the right third -> Go to the next card
                 showCard(currentIndex + 1);
             }
+        });
+
+        // Refresh the app and clear session cache
+        refreshButton.addEventListener('click', () => {
+            // Clear session data (if applicable)
+            currentIndex = 0;
+
+            // Reload the app
+            location.reload();
         });
 
         // Fetch cards on page load
