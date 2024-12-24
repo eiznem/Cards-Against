@@ -17,7 +17,7 @@
 
     <style>
         body {
-            margin: 4;
+            margin: 0;
             font-family: Arial, sans-serif;
             background-color: black;
             color: white;
@@ -37,14 +37,14 @@
             justify-content: center;
             align-items: center;
             width: 90%;
-            height: 60%;
+            height: 60%; /* Increased height to 60% */
             overflow: hidden;
             cursor: pointer;
         }
 
         .card {
-            width: 95%; /* 10% narrower than the container */
-            height: 98%;
+            width: 95%; /* Increased card width to 95% */
+            height: 100%;
             position: absolute;
             display: flex;
             justify-content: center;
@@ -53,9 +53,11 @@
             text-align: center;
             background-color: black;
             border-radius: 10px;
-            box-shadow: 0 0 10px white;
+            box-shadow: 0 0 15px white; /* Ensures shadow is more prominent */
             opacity: 1;
             transition: opacity 0.5s ease, background-color 0.5s ease;
+            padding: 20px; /* Adds margin inside the card for the text */
+            box-sizing: border-box; /* Ensures padding doesn't increase size */
         }
     </style>
 </head>
