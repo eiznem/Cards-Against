@@ -24,7 +24,7 @@
             display: flex;
             flex-direction: column; /* Stack buttons vertically */
             align-items: center;
-            gap: 25px; /* Add spacing between buttons */
+            gap: 10px;
         }
 
         .deck-button {
@@ -88,7 +88,7 @@
         .nav-button {
             position: absolute;
             top: 50%;
-            transform: translate(-50%, -50%); /* Properly center chevrons */
+            transform: translateY(-50%); /* Properly center chevrons */
             background: none;
             border: 2px solid white;
             border-radius: 50%;
@@ -164,7 +164,7 @@
 
         @media (max-width: 768px) {
             #deck-selection {
-                gap: 25px; /* Maintain vertical spacing on small screens */
+                gap: 20px; /* Maintain vertical spacing on small screens */
             }
 
             .deck-button {
@@ -191,7 +191,7 @@
 
     <div id="card-container" style="display: none;">
         <div class="deck-label" id="deck-label">Loading...</div>
-        <div class="version-label" id="version-label">Version 1.0.9</div>
+        <div class="version-label" id="version-label">Version 1.1.0</div>
         <div id="current-card" class="card">Loading...</div>
         <div id="next-card" class="card"></div>
     </div>
@@ -224,11 +224,22 @@
             const availableDecks = ["VoApps Cards.csv", "Ex-Mormon Cards.csv"];
 
             availableDecks.forEach((deck) => {
+                // Create a div to wrap the button
+                const buttonWrapper = document.createElement("div");
+                buttonWrapper.style.display = "flex"; // Optional: To control layout within the div
+                buttonWrapper.style.justifyContent = "center"; // Optional: Center the button inside the div
+                buttonWrapper.style.width = "100%"; // Optional: Adjust width
+                buttonWrapper.style.marginBottom = "25px"; // Add spacing between the button divs
+
+                // Create the button
                 const button = document.createElement("button");
                 button.textContent = deck.replace(".csv", "");
                 button.className = "deck-button";
                 button.addEventListener("click", () => selectDeck(deck));
-                deckButtons.appendChild(button);
+
+                // Append the button to the wrapper, then the wrapper to the container
+                buttonWrapper.appendChild(button);
+                deckButtons.appendChild(buttonWrapper);
             });
         }
 
@@ -236,7 +247,7 @@
             const deckName = deck.replace(".csv", "");
             document.title = `${deckName} - Black`;
             deckLabel.textContent = deckName;
-            versionLabel.textContent = "Version 1.0.9";
+            versionLabel.textContent = "Version 1.1.0";
             deckSelection.style.display = "none";
             cardContainer.style.display = "flex";
             prevButton.style.display = "block";
