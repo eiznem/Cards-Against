@@ -41,7 +41,7 @@
             border-radius: 15px;
             position: absolute;
             opacity: 1;
-            transition: opacity 0.5s ease; /* Fade-in/Fade-out only */
+            transition: opacity 1.5s ease; /* Fade-in/Fade-out only */
         }
 
         .hidden {
@@ -181,7 +181,7 @@
             tempDiv.style.padding = "20px";
             tempDiv.style.textAlign = "center";
             tempDiv.style.fontSize = "1.8rem";
-            tempDiv.style.lineHeight = "1.5";
+            tempDiv.style.lineHeight = "1";
             tempDiv.textContent = text;
 
             document.body.appendChild(tempDiv);
@@ -203,7 +203,7 @@
                     currentCard.classList.remove("hidden"); // Fade in
                 });
                 currentIndex = index;
-            }, 500); // Wait for fade-out
+            }, 1500); // Wait for fade-out
         }
 
         prevButton.addEventListener("click", () => {
