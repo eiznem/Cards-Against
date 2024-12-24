@@ -12,7 +12,7 @@
     <style>
         body {
             margin: 0;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Helvetica Neue';
             background: radial-gradient(circle, #222222 60%, black 100%);
             color: white;
             display: flex;
@@ -40,9 +40,42 @@
             height: 100%;
             border-radius: 15px;
             position: absolute;
+            opacity: 1;
+            transition: opacity 0.5s ease; /* Fade transition */
         }
 
-        /* Buttons */
+        .hidden {
+            opacity: 0;
+        }
+
+        /* Navigation Buttons */
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-button.left {
+            left: -60px;
+        }
+
+        .nav-button.right {
+            right: -60px;
+        }
+
+        .nav-button:hover {
+            color: #aaaaaa;
+        }
+
+        /* Control Buttons (Refresh, Share) */
         .button {
             position: absolute;
             top: 20px;
@@ -85,6 +118,11 @@
         <img id="current-card" class="card-image" alt="Card Image" src="">
     </div>
 
+    <!-- Navigation Buttons -->
+    <button class="nav-button left" id="prev-button">&laquo;</button>
+    <button class="nav-button right" id="next-button">&raquo;</button>
+
+    <!-- Refresh and Share Buttons -->
     <button id="refresh-button" class="button">
         <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
@@ -104,6 +142,8 @@
         const currentCard = document.getElementById("current-card");
         const refreshButton = document.getElementById("refresh-button");
         const shareButton = document.getElementById("share-button");
+        const prevButton = document.getElementById("prev-button");
+        const nextButton = document.getElementById("next-button");
 
         // Shuffle cards using Fisher-Yates
         function shuffle(array) {
@@ -138,7 +178,7 @@
             tempDiv.style.display = "flex";
             tempDiv.style.justifyContent = "center";
             tempDiv.style.alignItems = "center";
-            tempDiv.style.padding = "20px"; /* Added padding for margin */
+            tempDiv.style.padding = "20px";
             tempDiv.style.textAlign = "center";
             tempDiv.style.fontSize = "1.8rem";
             tempDiv.style.lineHeight = "1.5";
@@ -156,19 +196,22 @@
 
         function showCard(index) {
             if (index < 0 || index >= cards.length) return;
-            renderCard(cards[index], currentCard);
-            currentIndex = index;
+
+            currentCard.classList.add("hidden"); // Fade out
+            setTimeout(() => {
+                renderCard(cards[index], currentCard).then(() => {
+                    currentCard.classList.remove("hidden"); // Fade in
+                });
+                currentIndex = index;
+            }, 500); // Wait for fade-out
         }
 
-        cardContainer.addEventListener("click", (e) => {
-            const rect = cardContainer.getBoundingClientRect();
-            const x = e.clientX - rect.left;
+        prevButton.addEventListener("click", () => {
+            showCard(currentIndex - 1);
+        });
 
-            if (x < rect.width / 3) {
-                showCard(currentIndex - 1);
-            } else if (x > (2 * rect.width) / 3) {
-                showCard(currentIndex + 1);
-            }
+        nextButton.addEventListener("click", () => {
+            showCard(currentIndex + 1);
         });
 
         refreshButton.addEventListener("click", () => {
