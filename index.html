@@ -76,12 +76,12 @@
 
         #refresh-button, #share-button {
             position: absolute;
-            bottom: 10px;
+            bottom: 15px;
             background: linear-gradient(135deg, #6a11cb, #2575fc);
             border: none;
             border-radius: 50%;
-            width: 70px;
-            height: 70px;
+            width: 50px; /* Smaller buttons */
+            height: 50px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -91,7 +91,7 @@
         }
 
         #refresh-button {
-            right: 90px;
+            right: 70px;
         }
 
         #share-button {
@@ -99,8 +99,8 @@
         }
 
         #refresh-icon, #share-icon {
-            width: 60%;
-            height: 60%;
+            width: 50%; /* Smaller icons */
+            height: 50%;
             fill: none;
             stroke: white;
             stroke-width: 3;
@@ -180,12 +180,13 @@
         function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
+            // Slide current card in the opposite direction
             currentCard.style.opacity = 0;
-            currentCard.style.transform = `translateX(${direction === 'right' ? '100%' : '-100%'})`;
+            currentCard.style.transform = `translateX(${direction === 'right' ? '-100%' : '100%'})`;
 
             setTimeout(() => {
                 cardText.textContent = cards[index];
-                currentCard.style.transform = `translateX(${direction === 'right' ? '-100%' : '100%'})`;
+                currentCard.style.transform = `translateX(${direction === 'right' ? '100%' : '-100%'})`;
                 currentCard.style.opacity = 1;
                 currentCard.style.transform = 'translateX(0)';
                 currentIndex = index;
