@@ -43,41 +43,15 @@
             height: 100%;
             position: absolute;
             opacity: 1;
-            transform: translateX(0);
-            transition: transform 0.6s ease, opacity 0.6s ease;
+            transition: opacity 0.6s ease;
         }
 
-        /* Outgoing Card */
-        .fade-out-left {
+        .fade-out {
             opacity: 0;
-            transform: translateX(-100%);
         }
 
-        .fade-out-right {
-            opacity: 0;
-            transform: translateX(100%);
-        }
-
-        /* Incoming Card */
-        .fade-in-left {
+        .fade-in {
             opacity: 1;
-            transform: translateX(0);
-        }
-
-        .fade-in-right {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        /* Starting Positions for New Cards */
-        .off-screen-left {
-            opacity: 0;
-            transform: translateX(-100%);
-        }
-
-        .off-screen-right {
-            opacity: 0;
-            transform: translateX(100%);
         }
 
         /* Navigation Buttons */
@@ -96,6 +70,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .nav-button.left {
@@ -104,6 +79,11 @@
 
         .nav-button.right {
             right: calc(50vw - 25px - (40% + 20px)); /* Halfway between card and screen edge */
+        }
+
+        .nav-button:active {
+            background: linear-gradient(135deg, #6A11CB, #2575FC);
+            border-color: #2575FC;
         }
 
         .nav-button:hover {
@@ -149,7 +129,7 @@
 </head>
 <body>
     <div id="card-container">
-        <div class="version-label">Version 1.0.7</div>
+        <div class="version-label">Version 1.0.8</div>
         <div id="current-card" class="card">Loading...</div>
         <div id="next-card" class="card"></div>
     </div>
@@ -168,7 +148,6 @@
     <script>
         let cards = [];
         let currentIndex = 0;
-        let previousIndex = -1; // Track the last seen card
 
         const currentCard = document.getElementById("current-card");
         const nextCard = document.getElementById("next-card");
@@ -197,53 +176,41 @@
             }
         }
 
-        function showCard(index, direction) {
+        function showCard(index) {
             if (index < 0 || index >= cards.length) return;
 
-            // Determine exit and entry directions
-            let exitClass, enterClass;
+            // Fade out the current card
+            currentCard.classList.add("fade-out");
 
-            if (index === previousIndex) {
-                // Returning to the previous card
-                exitClass = "fade-out-right";
-                enterClass = "fade-in-left";
-            } else {
-                // Moving to the next new card
-                exitClass = "fade-out-left";
-                enterClass = "fade-in-right";
-            }
-
-            // Prepare the incoming card
-            nextCard.textContent = cards[index];
-            nextCard.className = `card ${enterClass === "fade-in-right" ? "off-screen-right" : "off-screen-left"}`;
-
-            // Animate the outgoing card
-            currentCard.className = `card ${exitClass}`;
-
-            // Finalize swap after animation
             setTimeout(() => {
-                nextCard.className = `card ${enterClass}`;
+                // Update the content for the next card
+                currentCard.textContent = cards[index];
+                currentCard.classList.remove("fade-out");
+                currentCard.classList.add("fade-in");
+
+                // Reset the fade-in class after animation
                 setTimeout(() => {
-                    currentCard.textContent = nextCard.textContent;
-                    currentCard.className = "card";
-                    nextCard.className = "card";
-                    previousIndex = currentIndex;
-                    currentIndex = index;
+                    currentCard.classList.remove("fade-in");
                 }, 600);
-            }, 0); // Ensure immediate outgoing animation
+
+                currentIndex = index;
+            }, 600);
         }
 
         prevButton.addEventListener("click", () => {
-            showCard(currentIndex - 1, "left");
+            prevButton.classList.add("active");
+            showCard(currentIndex - 1);
+            setTimeout(() => prevButton.classList.remove("active"), 600);
         });
 
         nextButton.addEventListener("click", () => {
-            showCard(currentIndex + 1, "right");
+            nextButton.classList.add("active");
+            showCard(currentIndex + 1);
+            setTimeout(() => nextButton.classList.remove("active"), 600);
         });
 
         refreshButton.addEventListener("click", () => {
             currentIndex = 0;
-            previousIndex = -1;
             location.reload();
         });
 
