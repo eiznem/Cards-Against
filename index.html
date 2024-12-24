@@ -5,10 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ex-Mormon Black Cards</title>
     <style>
+        /* General Styles */
+        @font-face {
+            font-family: 'Helvetica Neue';
+            font-weight: bold;
+            src: local('Helvetica Neue Bold'), local('HelveticaNeue-Bold');
+        }
+
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: radial-gradient(circle at center, black 60%, #222222 100%); /* Fixed gradient */
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: radial-gradient(circle at center, black 60%, #222222 100%);
             color: white;
             display: flex;
             justify-content: center;
@@ -36,7 +43,7 @@
         .card {
             width: 95%;
             height: calc(100% - 20px);
-            position: absolute;
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -46,6 +53,24 @@
             border-radius: 10px;
             padding: 20px;
             box-sizing: border-box;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        /* Add subtle texture to the card */
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAfUlEQVR42mJgGAWDEQAmhASMQlIPEnSTAE5EUjGBD6SoScuKIJkBxaADnATgmZjhhBlTJSRZGVQjYkk5QxQqDoHYN5CqElDoig5zqioJcqHUGGl3kJUlLQ5BtFoAukTYbSHEDRLBTCUA0gZBGUJBIUJABAEAQEk64xxgbkLAAAAAElFTkSuQmCC');
+            background-size: cover;
+            opacity: 0.1; /* Subtle texture */
+            z-index: 1;
+            border-radius: 10px;
+            pointer-events: none; /* Make it non-interactive */
         }
 
         #refresh-button {
