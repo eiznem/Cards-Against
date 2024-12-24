@@ -27,7 +27,7 @@
             text-align: center;
             position: relative;
             background-color: black;
-            border-radius: 15px; /* Rounded edges */
+            border-radius: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -36,12 +36,13 @@
             overflow: hidden;
         }
 
-        .card-text {
-            font-size: 2rem;
-            text-align: center;
-            padding: 10px;
-            line-height: 1.5;
-            color: white;
+        .card-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            object-fit: cover;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            position: absolute;
         }
 
         /* Buttons */
@@ -84,7 +85,8 @@
 </head>
 <body>
     <div id="card-container">
-        <span id="card-text" class="card-text">Loading...</span>
+        <img id="current-card" class="card-image" alt="Card Image" src="">
+        <img id="next-card" class="card-image" alt="Next Card Image" src="" style="opacity: 0;">
     </div>
 
     <button id="refresh-button" class="button">
@@ -102,8 +104,9 @@
         let cards = [];
         let currentIndex = 0;
 
-        const cardText = document.getElementById("card-text");
         const cardContainer = document.getElementById("card-container");
+        const currentCard = document.getElementById("current-card");
+        const nextCard = document.getElementById("next-card");
         const refreshButton = document.getElementById("refresh-button");
         const shareButton = document.getElementById("share-button");
 
@@ -124,17 +127,70 @@
             cards = shuffle(cards);
 
             if (cards.length > 0) {
-                cardText.textContent = cards[currentIndex];
+                renderCard(cards[currentIndex], currentCard);
             }
         }
 
-        function showCard(index) {
+        // Render card to an image
+        async function renderCard(text, cardElement) {
+            const tempDiv = document.createElement("div");
+            tempDiv.style.position = "absolute";
+            tempDiv.style.width = "66.6%";
+            tempDiv.style.height = "50%";
+            tempDiv.style.backgroundColor = "black";
+            tempDiv.style.color = "white";
+            tempDiv.style.borderRadius = "15px";
+            tempDiv.style.display = "flex";
+            tempDiv.style.justifyContent = "center";
+            tempDiv.style.alignItems = "center";
+            tempDiv.style.padding = "20px";
+            tempDiv.style.textAlign = "center";
+            tempDiv.style.fontSize = "1.8rem";
+            tempDiv.style.lineHeight = "1.5";
+            tempDiv.textContent = text;
+
+            document.body.appendChild(tempDiv);
+
+            const canvas = await html2canvas(tempDiv, {
+                backgroundColor: null,
+                scale: 2,
+            });
+            cardElement.src = canvas.toDataURL("image/png");
+            tempDiv.remove();
+        }
+
+        function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
-            // Change card text
-            cardText.textContent = cards[index];
-            currentIndex = index;
+            renderCard(cards[index], nextCard).then(() => {
+                nextCard.style.opacity = 1;
+                nextCard.style.transform = `translateX(${direction === "right" ? "100%" : "-100%"})`;
+
+                setTimeout(() => {
+                    currentCard.style.transform = `translateX(${direction === "right" ? "-100%" : "100%"})`;
+                    nextCard.style.transform = "translateX(0)";
+
+                    setTimeout(() => {
+                        currentCard.src = nextCard.src;
+                        currentCard.style.transform = "translateX(0)";
+                        nextCard.style.opacity = 0;
+                    }, 500);
+                }, 50);
+
+                currentIndex = index;
+            });
         }
+
+        cardContainer.addEventListener("click", (e) => {
+            const rect = cardContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+
+            if (x < rect.width / 3) {
+                showCard(currentIndex - 1, "left");
+            } else if (x > (2 * rect.width) / 3) {
+                showCard(currentIndex + 1, "right");
+            }
+        });
 
         refreshButton.addEventListener("click", () => {
             currentIndex = 0;
@@ -142,15 +198,10 @@
         });
 
         shareButton.addEventListener("click", async () => {
-            const canvas = await html2canvas(cardContainer, {
-                backgroundColor: null, // Transparent background
-                scale: 2, // High resolution
-            });
-
-            const dataUrl = canvas.toDataURL("image/png");
+            const link = currentCard.src;
 
             if (navigator.canShare && navigator.canShare({ files: [] })) {
-                const blob = await (await fetch(dataUrl)).blob();
+                const blob = await (await fetch(link)).blob();
                 const file = new File([blob], "card.png", { type: "image/png" });
 
                 try {
@@ -163,10 +214,10 @@
                     console.error("Share failed:", error);
                 }
             } else {
-                const link = document.createElement("a");
-                link.href = dataUrl;
-                link.download = "card.png";
-                link.click();
+                const a = document.createElement("a");
+                a.href = link;
+                a.download = "card.png";
+                a.click();
             }
         });
 
