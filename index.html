@@ -23,7 +23,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 20px; /* Adds space between buttons */
         }
 
         .deck-button {
@@ -152,6 +152,15 @@
             font-size: 10px;
             color: rgba(255, 255, 255, 0.25);
         }
+
+        /* Deck Name Label */
+        .deck-label {
+            position: absolute;
+            bottom: 5px;
+            left: 10px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.25);
+        }
     </style>
 </head>
 <body>
@@ -161,6 +170,7 @@
     </div>
 
     <div id="card-container" style="display: none;">
+        <div class="deck-label" id="deck-label">Loading...</div>
         <div class="version-label" id="version-label">Version 1.0.9</div>
         <div id="current-card" class="card">Loading...</div>
         <div id="next-card" class="card"></div>
@@ -190,76 +200,68 @@
         const deckSelection = document.getElementById("deck-selection");
         const cardContainer = document.getElementById("card-container");
         const versionLabel = document.getElementById("version-label");
+        const deckLabel = document.getElementById("deck-label");
 
-        // Fetch the CSV files dynamically from the directory
         async function loadDecks() {
-            const availableDecks = ["VoApps Cards.csv", "Ex-Mormon Cards.csv"]; // Hardcoded for the example
+            const availableDecks = ["VoApps Cards.csv", "Ex-Mormon Cards.csv"];
 
             availableDecks.forEach((deck) => {
                 const button = document.createElement("button");
-                button.textContent = deck.replace(".csv", ""); // Remove .csv extension
+                button.textContent = deck.replace(".csv", "");
                 button.className = "deck-button";
                 button.addEventListener("click", () => selectDeck(deck));
                 deckButtons.appendChild(button);
             });
         }
 
-        // Load a specific deck and set up the game
         async function selectDeck(deck) {
-            const deckName = deck.replace(".csv", ""); // Format deck name
-            document.title = `${deckName} - Black`; // Set page title dynamically
-            versionLabel.textContent = `${deckName} - Black`; // Update the version label
-            deckSelection.style.display = "none"; // Hide the selection screen
-            cardContainer.style.display = "flex"; // Show the card container
+            const deckName = deck.replace(".csv", "");
+            document.title = `${deckName} - Black`;
+            deckLabel.textContent = deckName;
+            versionLabel.textContent = "Version 1.0.9";
+            deckSelection.style.display = "none";
+            cardContainer.style.display = "flex";
             prevButton.style.display = "block";
             nextButton.style.display = "block";
             refreshButton.style.display = "block";
 
-            // Simulate fetching the deck content (replace this with actual fetch if needed)
-            const text = deckName === "VoApps Cards" 
-                ? `Card 1\nCard 2\nCard 3\nCard 4\nCard 5` 
-                : `Ex-Mormon 1\nEx-Mormon 2\nEx-Mormon 3\nEx-Mormon 4\nEx-Mormon 5`;
-
-            cards = text.split("\n").map((card) => card.trim()).filter((card) => card !== ""); // Parse the deck
-            currentCard.textContent = cards[currentIndex]; // Display the first card
+            const response = await fetch(deck);
+            const text = await response.text();
+            cards = text.split("\n").map((card) => card.trim()).filter((card) => card !== "");
+            currentCard.textContent = cards[currentIndex];
         }
 
-        // Display a specific card with fade-in/fade-out transitions
         function showCard(index) {
-            if (index < 0 || index >= cards.length) return; // Prevent out-of-bounds access
+            if (index < 0 || index >= cards.length) return;
 
-            currentCard.classList.add("fade-out"); // Start fade-out animation
+            currentCard.classList.add("fade-out");
 
             setTimeout(() => {
-                currentCard.textContent = cards[index]; // Update card content
-                currentCard.classList.remove("fade-out"); // Reset fade-out class
-                currentCard.classList.add("fade-in"); // Start fade-in animation
+                currentCard.textContent = cards[index];
+                currentCard.classList.remove("fade-out");
+                currentCard.classList.add("fade-in");
 
                 setTimeout(() => {
-                    currentCard.classList.remove("fade-in"); // Reset fade-in class after animation
+                    currentCard.classList.remove("fade-in");
                 }, 600);
 
-                currentIndex = index; // Update the current card index
-            }, 600); // Delay for the fade-out duration
+                currentIndex = index;
+            }, 600);
         }
 
-        // Navigate to the previous card
         prevButton.addEventListener("click", () => {
             showCard(currentIndex - 1);
         });
 
-        // Navigate to the next card
         nextButton.addEventListener("click", () => {
             showCard(currentIndex + 1);
         });
 
-        // Reload the page to refresh the game
         refreshButton.addEventListener("click", () => {
             currentIndex = 0;
             location.reload();
         });
 
-        // Call the loadDecks function to populate deck buttons
         loadDecks();
     </script>
 </body>
