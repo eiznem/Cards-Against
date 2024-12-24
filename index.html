@@ -19,7 +19,7 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: black;
+            background-color: #333333; /* Updated page background color */
             color: white;
             display: flex;
             justify-content: center;
@@ -32,7 +32,7 @@
         #card-container {
             text-align: center;
             position: relative;
-            background-color: black;
+            background-color: black; /* Card background remains black */
             border-radius: 10px;
             display: flex;
             justify-content: center;
@@ -45,7 +45,7 @@
 
         .card {
             width: 95%;
-            height: calc(100% - 20px); /* Add margin to prevent cut-off */
+            height: calc(100% - 20px); /* Prevents cutoff */
             position: absolute;
             display: flex;
             justify-content: center;
@@ -99,7 +99,6 @@
 </head>
 <body>
     <button id="refresh-button">🔄</button>
-    <button id="fullscreen-button">⛶</button>
     <div id="card-container">
         <div id="current-card" class="card">
             <span id="card-text" class="card-text">Loading...</span>
@@ -114,7 +113,20 @@
         const cardText = document.getElementById('card-text');
         const cardContainer = document.getElementById('card-container');
         const refreshButton = document.getElementById('refresh-button');
-        const fullscreenButton = document.getElementById('fullscreen-button');
+
+        // Add fullscreen button if on desktop
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (!isMobile) {
+            const fullscreenButton = document.createElement('button');
+            fullscreenButton.id = 'fullscreen-button';
+            fullscreenButton.innerHTML = '⛶';
+            fullscreenButton.addEventListener('click', () => {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                }
+            });
+            document.body.appendChild(fullscreenButton);
+        }
 
         // Shuffle the cards array using Fisher-Yates algorithm
         function shuffle(array) {
@@ -179,13 +191,6 @@
         refreshButton.addEventListener('click', () => {
             currentIndex = 0;
             location.reload();
-        });
-
-        // Enable fullscreen mode
-        fullscreenButton.addEventListener('click', () => {
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            }
         });
 
         // Fetch cards on page load
