@@ -38,14 +38,14 @@
         .card-text {
             font-size: 2rem;
             text-align: center;
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            transition: opacity 1s ease, transform 1s ease; /* Slower animation */
         }
 
         /* Modern Buttons */
         .button {
             position: absolute;
-            bottom: 20px;
-            background: linear-gradient(135deg, #4CAF50, #81C784); /* Modern gradient */
+            bottom: 80px; /* Higher positioning for visibility */
+            background: linear-gradient(135deg, #6A11CB, #2575FC); /* Purple gradient */
             border: none;
             border-radius: 50%;
             width: 70px;
@@ -151,7 +151,7 @@
                 }, 50);
 
                 currentIndex = index;
-            }, 500);
+            }, 1000); // Longer duration for animations
         }
 
         cardContainer.addEventListener("click", (e) => {
