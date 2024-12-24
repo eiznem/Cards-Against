@@ -191,12 +191,13 @@
         const cardContainer = document.getElementById("card-container");
         const versionLabel = document.getElementById("version-label");
 
-        // Mock function for testing deck buttons since fetch(./) won't work in local setups
-        function mockDecks() {
-            const fakeDecks = ["deck1.csv", "deck2.csv", "deck3.csv"];
-            fakeDecks.forEach((deck) => {
+        // Fetch the CSV files dynamically from the directory
+        async function loadDecks() {
+            const availableDecks = ["VoApps Cards.csv", "Ex-Mormon Cards.csv"]; // Hardcoded for the example
+
+            availableDecks.forEach((deck) => {
                 const button = document.createElement("button");
-                button.textContent = deck.replace(".csv", "");
+                button.textContent = deck.replace(".csv", ""); // Remove .csv extension
                 button.className = "deck-button";
                 button.addEventListener("click", () => selectDeck(deck));
                 deckButtons.appendChild(button);
@@ -214,8 +215,11 @@
             nextButton.style.display = "block";
             refreshButton.style.display = "block";
 
-            // Simulate fetching the deck content
-            const text = `Card 1\nCard 2\nCard 3\nCard 4\nCard 5`;
+            // Simulate fetching the deck content (replace this with actual fetch if needed)
+            const text = deckName === "VoApps Cards" 
+                ? `Card 1\nCard 2\nCard 3\nCard 4\nCard 5` 
+                : `Ex-Mormon 1\nEx-Mormon 2\nEx-Mormon 3\nEx-Mormon 4\nEx-Mormon 5`;
+
             cards = text.split("\n").map((card) => card.trim()).filter((card) => card !== ""); // Parse the deck
             currentCard.textContent = cards[currentIndex]; // Display the first card
         }
@@ -255,8 +259,8 @@
             location.reload();
         });
 
-        // Call the mockDecks function to populate fake deck buttons
-        mockDecks();
+        // Call the loadDecks function to populate deck buttons
+        loadDecks();
     </script>
 </body>
 </html>
