@@ -13,7 +13,7 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: radial-gradient(circle, black 60%, #222222 100%);
+            background: radial-gradient(circle, #222222 60%, black 100%);
             color: white;
             display: flex;
             justify-content: center;
@@ -27,65 +27,54 @@
             text-align: center;
             position: relative;
             background-color: black;
-            border-radius: 10px;
+            border-radius: 15px; /* Rounded edges */
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 90%;
-            height: 60%;
+            width: 66.6%; /* 1.33:1 aspect ratio */
+            height: 50%;
             overflow: hidden;
-            box-shadow: 0 0 15px white;
         }
 
         .card-text {
             font-size: 2rem;
             text-align: center;
-            transition: opacity 1s ease, transform 1s ease; /* Smooth and slower animation */
+            padding: 10px;
+            line-height: 1.5;
+            color: white;
         }
 
-        /* Modern Buttons */
+        /* Buttons */
         .button {
             position: absolute;
-            top: 20px; /* Placed at the top */
+            top: 20px;
             background: linear-gradient(135deg, #6A11CB, #2575FC); /* Purple gradient */
             border: none;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.3);
-        }
-
-        .button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 15px rgba(255, 255, 255, 0.5);
         }
 
         #refresh-button {
-            left: 20px; /* Placed on the left */
+            left: 20px; /* Left-aligned */
         }
 
         #share-button {
-            right: 20px; /* Placed on the right */
+            right: 20px; /* Right-aligned */
         }
 
         .button-icon {
-            width: 40%; /* Smaller icon size */
-            height: 40%;
+            width: 60%;
+            height: 60%;
             fill: none;
             stroke: white;
             stroke-width: 2.5;
             stroke-linecap: round;
             stroke-linejoin: round;
-        }
-
-        #refresh-button:active .button-icon {
-            transform: rotate(360deg);
-            transition: transform 1s ease;
         }
 
         #share-icon {
@@ -139,37 +128,13 @@
             }
         }
 
-        function showCard(index, direction) {
+        function showCard(index) {
             if (index < 0 || index >= cards.length) return;
 
-            // Animate text out
-            cardText.style.opacity = 0;
-            cardText.style.transform = `translateX(${direction === "right" ? "-100%" : "100%"})`;
-
-            setTimeout(() => {
-                // Change text and animate in
-                cardText.textContent = cards[index];
-                cardText.style.transform = `translateX(${direction === "right" ? "100%" : "-100%"})`;
-
-                setTimeout(() => {
-                    cardText.style.transform = "translateX(0)";
-                    cardText.style.opacity = 1;
-                }, 50);
-
-                currentIndex = index;
-            }, 1000); // Longer duration for animations
+            // Change card text
+            cardText.textContent = cards[index];
+            currentIndex = index;
         }
-
-        cardContainer.addEventListener("click", (e) => {
-            const rect = cardContainer.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-
-            if (x < rect.width / 3) {
-                showCard(currentIndex - 1, "left");
-            } else if (x > (2 * rect.width) / 3) {
-                showCard(currentIndex + 1, "right");
-            }
-        });
 
         refreshButton.addEventListener("click", () => {
             currentIndex = 0;
@@ -177,7 +142,11 @@
         });
 
         shareButton.addEventListener("click", async () => {
-            const canvas = await html2canvas(cardContainer, { scale: 2 });
+            const canvas = await html2canvas(cardContainer, {
+                backgroundColor: null, // Transparent background
+                scale: 2, // High resolution
+            });
+
             const dataUrl = canvas.toDataURL("image/png");
 
             if (navigator.canShare && navigator.canShare({ files: [] })) {
