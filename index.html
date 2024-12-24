@@ -10,7 +10,7 @@
         body {
             margin: 0;
             font-family: 'Helvetica Neue';
-            background: radial-gradient(circle, #222222, #111111, #444444);
+            background: radial-gradient(circle, #111111, #222222, #444444);
             color: white;
             display: flex;
             justify-content: center;
@@ -41,7 +41,7 @@
             position: absolute;
             opacity: 1;
             transform: translateX(0);
-            transition: opacity 0.75s ease, transform 0.75s ease;
+            transition: opacity 1s ease, transform 1s ease; /* Slower transitions */
         }
 
         .hidden-left {
@@ -54,9 +54,13 @@
             transform: translateX(100%);
         }
 
-        .visible {
+        .fade-in {
             opacity: 1;
-            transform: translateX(0);
+            transform: translateX(0); /* No movement during entrance */
+        }
+
+        .fade-out {
+            opacity: 0;
         }
 
         /* Navigation Buttons */
@@ -115,8 +119,8 @@
 </head>
 <body>
     <div id="card-container">
-        <div id="current-card" class="card visible">Loading...</div>
-        <div id="next-card" class="card hidden-right"></div>
+        <div id="current-card" class="card fade-in">Loading...</div>
+        <div id="next-card" class="card fade-out"></div>
     </div>
 
     <!-- Navigation Buttons -->
@@ -134,7 +138,6 @@
         let cards = [];
         let currentIndex = 0;
 
-        const cardContainer = document.getElementById("card-container");
         const currentCard = document.getElementById("current-card");
         const nextCard = document.getElementById("next-card");
         const prevButton = document.getElementById("prev-button");
@@ -167,28 +170,27 @@
 
             // Determine the exit and entry directions
             const exitClass = direction === "left" ? "hidden-left" : "hidden-right";
-            const enterClass = direction === "left" ? "hidden-right" : "hidden-left";
 
             // Set the next card's content
             nextCard.textContent = cards[index];
 
-            // Prepare the next card for entry
-            nextCard.classList.remove("visible", "hidden-left", "hidden-right");
-            nextCard.classList.add(enterClass);
+            // Prepare the next card for entrance (fade-in only)
+            nextCard.classList.remove("fade-in", "fade-out");
+            nextCard.classList.add("fade-in");
 
-            // Animate the current card out
-            currentCard.classList.remove("visible");
-            currentCard.classList.add(exitClass);
+            // Animate the current card out (fade-out + movement)
+            currentCard.classList.remove("fade-in");
+            currentCard.classList.add(exitClass, "fade-out");
 
             setTimeout(() => {
                 // Swap current and next card roles
                 currentCard.textContent = nextCard.textContent;
-                currentCard.classList.remove("hidden-left", "hidden-right");
-                currentCard.classList.add("visible");
+                currentCard.classList.remove("hidden-left", "hidden-right", "fade-out");
+                currentCard.classList.add("fade-in");
 
-                nextCard.classList.remove("visible");
+                nextCard.classList.remove("fade-in");
                 currentIndex = index;
-            }, 750); // Transition duration
+            }, 1000); // Transition duration
         }
 
         prevButton.addEventListener("click", () => {
