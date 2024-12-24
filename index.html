@@ -191,71 +191,80 @@
         const cardContainer = document.getElementById("card-container");
         const versionLabel = document.getElementById("version-label");
 
+        // Fetch the available deck files from the current directory
         async function loadDecks() {
-            const response = await fetch("./"); // Fetch files from the same directory
-            const text = await response.text();
+            const response = await fetch("./"); // Request the current directory listing
+            const text = await response.text(); // Parse the directory content
             const parser = new DOMParser();
             const doc = parser.parseFromString(text, "text/html");
             const links = Array.from(doc.querySelectorAll("a"))
-                .map((a) => a.getAttribute("href"))
-                .filter((href) => href.endsWith(".csv"));
+                .map((a) => a.getAttribute("href")) // Get href attributes of links
+                .filter((href) => href.endsWith(".csv")); // Only include CSV files
 
+            // Create buttons for each deck file
             links.forEach((link) => {
                 const button = document.createElement("button");
-                button.textContent = link.replace(".csv", "");
+                button.textContent = link.replace(".csv", ""); // Remove .csv extension
                 button.className = "deck-button";
-                button.addEventListener("click", () => selectDeck(link));
+                button.addEventListener("click", () => selectDeck(link)); // Add event listener
                 deckButtons.appendChild(button);
             });
         }
 
+        // Load a specific deck and set up the game
         async function selectDeck(deck) {
-            const deckName = deck.replace(".csv", "");
-            document.title = `${deckName} - Black`;
-            versionLabel.textContent = `${deckName} - Black`;
-            deckSelection.style.display = "none";
-            cardContainer.style.display = "flex";
+            const deckName = deck.replace(".csv", ""); // Format deck name
+            document.title = `${deckName} - Black`; // Set page title dynamically
+            versionLabel.textContent = `${deckName} - Black`; // Update the version label
+            deckSelection.style.display = "none"; // Hide the selection screen
+            cardContainer.style.display = "flex"; // Show the card container
             prevButton.style.display = "block";
             nextButton.style.display = "block";
             refreshButton.style.display = "block";
 
+            // Fetch the deck content
             const response = await fetch(deck);
             const text = await response.text();
-            cards = text.split("\n").map((card) => card.trim()).filter((card) => card !== "");
-            currentCard.textContent = cards[currentIndex];
+            cards = text.split("\n").map((card) => card.trim()).filter((card) => card !== ""); // Parse the deck
+            currentCard.textContent = cards[currentIndex]; // Display the first card
         }
 
+        // Display a specific card with fade-in/fade-out transitions
         function showCard(index) {
-            if (index < 0 || index >= cards.length) return;
+            if (index < 0 || index >= cards.length) return; // Prevent out-of-bounds access
 
-            currentCard.classList.add("fade-out");
+            currentCard.classList.add("fade-out"); // Start fade-out animation
 
             setTimeout(() => {
-                currentCard.textContent = cards[index];
-                currentCard.classList.remove("fade-out");
-                currentCard.classList.add("fade-in");
+                currentCard.textContent = cards[index]; // Update card content
+                currentCard.classList.remove("fade-out"); // Reset fade-out class
+                currentCard.classList.add("fade-in"); // Start fade-in animation
 
                 setTimeout(() => {
-                    currentCard.classList.remove("fade-in");
+                    currentCard.classList.remove("fade-in"); // Reset fade-in class after animation
                 }, 600);
 
-                currentIndex = index;
-            }, 600);
+                currentIndex = index; // Update the current card index
+            }, 600); // Delay for the fade-out duration
         }
 
+        // Navigate to the previous card
         prevButton.addEventListener("click", () => {
             showCard(currentIndex - 1);
         });
 
+        // Navigate to the next card
         nextButton.addEventListener("click", () => {
             showCard(currentIndex + 1);
         });
 
+        // Reload the page to refresh the game
         refreshButton.addEventListener("click", () => {
             currentIndex = 0;
             location.reload();
         });
 
+        // Load the decks when the page is loaded
         window.onload = loadDecks;
     </script>
 </body>
