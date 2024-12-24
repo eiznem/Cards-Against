@@ -191,22 +191,14 @@
         const cardContainer = document.getElementById("card-container");
         const versionLabel = document.getElementById("version-label");
 
-        // Fetch the available deck files from the current directory
-        async function loadDecks() {
-            const response = await fetch("./"); // Request the current directory listing
-            const text = await response.text(); // Parse the directory content
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(text, "text/html");
-            const links = Array.from(doc.querySelectorAll("a"))
-                .map((a) => a.getAttribute("href")) // Get href attributes of links
-                .filter((href) => href.endsWith(".csv")); // Only include CSV files
-
-            // Create buttons for each deck file
-            links.forEach((link) => {
+        // Mock function for testing deck buttons since fetch(./) won't work in local setups
+        function mockDecks() {
+            const fakeDecks = ["deck1.csv", "deck2.csv", "deck3.csv"];
+            fakeDecks.forEach((deck) => {
                 const button = document.createElement("button");
-                button.textContent = link.replace(".csv", ""); // Remove .csv extension
+                button.textContent = deck.replace(".csv", "");
                 button.className = "deck-button";
-                button.addEventListener("click", () => selectDeck(link)); // Add event listener
+                button.addEventListener("click", () => selectDeck(deck));
                 deckButtons.appendChild(button);
             });
         }
@@ -222,9 +214,8 @@
             nextButton.style.display = "block";
             refreshButton.style.display = "block";
 
-            // Fetch the deck content
-            const response = await fetch(deck);
-            const text = await response.text();
+            // Simulate fetching the deck content
+            const text = `Card 1\nCard 2\nCard 3\nCard 4\nCard 5`;
             cards = text.split("\n").map((card) => card.trim()).filter((card) => card !== ""); // Parse the deck
             currentCard.textContent = cards[currentIndex]; // Display the first card
         }
@@ -264,8 +255,8 @@
             location.reload();
         });
 
-        // Load the decks when the page is loaded
-        window.onload = loadDecks;
+        // Call the mockDecks function to populate fake deck buttons
+        mockDecks();
     </script>
 </body>
 </html>
