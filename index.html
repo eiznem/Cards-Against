@@ -24,7 +24,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 20px; /* Vertical spacing between buttons */
         }
 
         .deck-button {
@@ -32,11 +32,12 @@
             border: none;
             border-radius: 10px;
             padding: 10px 20px;
-            font-size: 1rem;
+            font-size: 0.9rem; /* Slightly smaller font size */
             color: white;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            width: 200px;
+            width: 250px; /* 25% wider than before */
+            height: 50px; /* Uniform height for all buttons */
             text-align: center;
         }
 
@@ -167,8 +168,9 @@
             }
 
             .deck-button {
-                width: 150px;
+                width: 200px;
                 padding: 10px 15px;
+                height: 50px;
             }
 
             .nav-button.left {
