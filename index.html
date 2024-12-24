@@ -43,7 +43,7 @@
         .card {
             width: 95%;
             height: calc(100% - 20px);
-            position: relative;
+            position: absolute;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -55,6 +55,7 @@
             box-sizing: border-box;
             font-family: 'Helvetica Neue', Arial, sans-serif;
             font-weight: bold;
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
         /* Subtle texture */
@@ -107,36 +108,28 @@
             stroke-linejoin: round;
         }
 
-        #refresh-button:hover, #share-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        #refresh-button:active, #share-button:active {
-            transform: scale(1.2);
-        }
-
-        #left-indicator, #right-indicator {
+        #left-tap, #right-tap {
             position: absolute;
             top: 0;
-            width: 50%;
             height: 100%;
             cursor: pointer;
             z-index: 10;
         }
 
-        #left-indicator {
+        #left-tap {
             left: 0;
+            width: 33%;
         }
 
-        #right-indicator {
+        #right-tap {
             right: 0;
+            width: 33%;
         }
     </style>
 </head>
 <body>
-    <div id="left-indicator"></div>
-    <div id="right-indicator"></div>
+    <div id="left-tap"></div>
+    <div id="right-tap"></div>
     <div id="card-container">
         <div id="current-card" class="card">
             <span id="card-text" class="card-text">Loading...</span>
@@ -158,8 +151,8 @@
 
         const currentCard = document.getElementById('current-card');
         const cardText = document.getElementById('card-text');
-        const leftIndicator = document.getElementById('left-indicator');
-        const rightIndicator = document.getElementById('right-indicator');
+        const leftTap = document.getElementById('left-tap');
+        const rightTap = document.getElementById('right-tap');
         const refreshButton = document.getElementById('refresh-button');
         const shareButton = document.getElementById('share-button');
 
@@ -187,23 +180,23 @@
         function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
-            cardText.style.opacity = 0;
-            cardText.style.transform = `translateX(${direction === 'right' ? '100%' : '-100%'})`;
+            currentCard.style.opacity = 0;
+            currentCard.style.transform = `translateX(${direction === 'right' ? '100%' : '-100%'})`;
 
             setTimeout(() => {
                 cardText.textContent = cards[index];
-                cardText.style.transform = `translateX(${direction === 'right' ? '-100%' : '100%'})`;
-                cardText.style.opacity = 1;
-                cardText.style.transform = 'translateX(0)';
+                currentCard.style.transform = `translateX(${direction === 'right' ? '-100%' : '100%'})`;
+                currentCard.style.opacity = 1;
+                currentCard.style.transform = 'translateX(0)';
                 currentIndex = index;
             }, 500);
         }
 
-        leftIndicator.addEventListener('click', () => {
+        leftTap.addEventListener('click', () => {
             showCard(currentIndex - 1, 'left');
         });
 
-        rightIndicator.addEventListener('click', () => {
+        rightTap.addEventListener('click', () => {
             showCard(currentIndex + 1, 'right');
         });
 
