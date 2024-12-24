@@ -61,17 +61,36 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            background: none;
+            background-color: chartreuse; /* Background color */
             border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
-            width: 40px;
-            height: 40px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        #refresh-button:hover {
+            transform: scale(1.1); /* Slight zoom effect on hover */
+            box-shadow: 0 0 15px white;
+        }
+
+        #refresh-button:active {
+            transform: scale(0.9); /* Scale down on click */
         }
 
         #refresh-icon {
-            width: 100%;
-            height: 100%;
-            display: block;
+            width: 60%;
+            height: 60%;
+            fill: none; /* No fill for the icon */
+            stroke: white; /* White outline */
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
             transition: transform 0.5s ease;
         }
 
@@ -82,7 +101,9 @@
 </head>
 <body>
     <button id="refresh-button">
-        <img id="refresh-icon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAIAAADwf7zUAAEAAElEQVR4nOz92ZfsSHIfDJqZOyIi89" alt="Refresh Icon">
+        <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+        </svg>
     </button>
     <div id="card-container">
         <div id="current-card" class="card">
