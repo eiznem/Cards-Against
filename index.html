@@ -46,7 +46,7 @@
         /* Modern Buttons */
         .button {
             position: absolute;
-            bottom: 80px;
+            top: 20px; /* Placed at the top */
             background: linear-gradient(135deg, #6A11CB, #2575FC); /* Purple gradient */
             border: none;
             border-radius: 50%;
@@ -66,11 +66,11 @@
         }
 
         #refresh-button {
-            right: 100px;
+            left: 20px; /* Placed on the left */
         }
 
         #share-button {
-            right: 20px;
+            right: 20px; /* Placed on the right */
         }
 
         .button-icon {
@@ -87,6 +87,10 @@
             transform: rotate(360deg);
             transition: transform 1s ease;
         }
+
+        #share-icon {
+            stroke-width: 3;
+        }
     </style>
 </head>
 <body>
@@ -100,8 +104,8 @@
         </svg>
     </button>
     <button id="share-button" class="button">
-        <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M4 12h7V8l8 8-8 8v-4H4v-8z"/>
+        <svg class="button-icon" id="share-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 16V4M12 4l6 6M12 4l-6 6M4 20h16v-2H4v2z" />
         </svg>
     </button>
 
