@@ -4,18 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ex-Mormon Black Cards</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        @font-face {
-            font-family: 'Helvetica Neue';
-            font-weight: bold;
-            src: local('Helvetica Neue Bold'), local('HelveticaNeue-Bold');
-        }
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
 
+    <style>
         body {
             margin: 0;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background: radial-gradient(circle at center, black 60%, #222222 100%);
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle, black 60%, #222222 100%);
             color: white;
             display: flex;
             justify-content: center;
@@ -36,7 +32,7 @@
             width: 90%;
             height: 60%;
             overflow: hidden;
-            box-shadow: 0 0 15px #ffffff;
+            cursor: pointer;
         }
 
         .card {
@@ -50,34 +46,19 @@
             text-align: center;
             background-color: black;
             border-radius: 10px;
+            box-shadow: 0 0 15px white;
             padding: 20px;
             box-sizing: border-box;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            font-weight: bold;
             transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        /* Subtle texture */
-        .card::before {
-            content: "";
+        /* Refresh Button */
+        #refresh-button {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAfUlEQVR42mJgGAWDEQAmhASMQlIPEnSTAE5EUjGBD6SoScuKIJkBxaADnATgmZjhhBlTJSRZGVQjYkk5QxQqDoHYN5CqElDoig5zqioJcqHUGGl3kJUlLQ5BtFoAukTYbSHEDRLBTCUA0gZBGUJBIUJABAEAQEk64xxgbkLAAAAAElFTkSuQmCC');
-            background-size: cover;
-            opacity: 0.1;
-            z-index: 1;
-            border-radius: 10px;
-            pointer-events: none;
-        }
-
-        #refresh-button, #share-button {
-            position: absolute;
-            bottom: 20px;
-            background: linear-gradient(135deg, #FF6B6B, #FFA726);
-            border: none;
+            top: 10px;
+            right: 10px;
+            background-color: white;
+            border: 2px solid chartreuse;
             border-radius: 50%;
             width: 60px;
             height: 60px;
@@ -85,79 +66,57 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            z-index: 10;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
-        #refresh-button {
-            right: 90px;
+        #refresh-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px chartreuse;
         }
 
-        #share-button {
-            right: 20px;
-        }
-
-        #refresh-icon, #share-icon {
-            width: 50%;
-            height: 50%;
+        #refresh-icon {
+            width: 90%;
+            height: 90%;
             fill: none;
-            stroke: white;
+            stroke: chartreuse;
             stroke-width: 3;
             stroke-linecap: round;
             stroke-linejoin: round;
+            transition: transform 1.5s ease;
         }
 
-        #left-tap, #right-tap {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            cursor: pointer;
-            z-index: 10;
+        #refresh-button:active #refresh-icon {
+            transform: rotate(1080deg);
         }
 
-        #left-tap {
-            left: 0;
-            width: 33%;
-        }
-
-        #right-tap {
-            right: 0;
-            width: 33%;
+        #refresh-button:active {
+            transform: scale(1.2);
         }
     </style>
 </head>
 <body>
-    <div id="left-tap"></div>
-    <div id="right-tap"></div>
-    <div id="card-container">
-        <div id="current-card" class="card">
-            <span id="card-text" class="card-text">Loading...</span>
-        </div>
-    </div>
     <button id="refresh-button">
         <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
         </svg>
     </button>
-    <button id="share-button">
-        <svg id="share-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M4 12h7V8l8 8-8 8v-4H4v-8z"/>
-        </svg>
-    </button>
+    <div id="card-container">
+        <div id="current-card" class="card">
+            <span id="card-text">Loading...</span>
+        </div>
+    </div>
+
     <script>
         let cards = [];
         let currentIndex = 0;
-        let usedCards = [];
 
-        const currentCard = document.getElementById('current-card');
-        const cardText = document.getElementById('card-text');
-        const leftTap = document.getElementById('left-tap');
-        const rightTap = document.getElementById('right-tap');
-        const refreshButton = document.getElementById('refresh-button');
-        const shareButton = document.getElementById('share-button');
+        const cardContainer = document.getElementById("card-container");
+        const currentCard = document.getElementById("current-card");
+        const cardText = currentCard.querySelector("#card-text");
+        const refreshButton = document.getElementById("refresh-button");
 
-        // Shuffle cards using Fisher-Yates
+        // Shuffle cards using Fisher-Yates algorithm
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -166,11 +125,11 @@
             return array;
         }
 
-        // Fetch cards from CSV
+        // Fetch cards from a CSV
         async function fetchCards() {
-            const response = await fetch('cards.csv');
+            const response = await fetch("cards.csv");
             const text = await response.text();
-            cards = text.split('\n').map(card => card.trim()).filter(card => card !== "");
+            cards = text.split("\n").map((card) => card.trim()).filter((card) => card !== "");
             cards = shuffle(cards);
 
             if (cards.length > 0) {
@@ -178,79 +137,46 @@
             }
         }
 
-        function getNextCard() {
-            if (usedCards.length === cards.length) {
-                usedCards = [];
-            }
-            let nextCard;
-            do {
-                nextCard = Math.floor(Math.random() * cards.length);
-            } while (usedCards.includes(nextCard));
-            usedCards.push(nextCard);
-            return nextCard;
-        }
-
         function showCard(index, direction) {
-            const newCardText = cards[index];
-            if (!newCardText) return;
+            if (index < 0 || index >= cards.length) return;
 
             const newCard = currentCard.cloneNode(true);
-            newCard.style.transform = `translateX(${direction === 'right' ? '100%' : '-100%'})`;
+            newCard.style.transform = `translateX(${direction === "right" ? "100%" : "-100%"})`;
             newCard.style.opacity = 0;
-            newCard.querySelector('.card-text').textContent = newCardText;
+            newCard.querySelector("#card-text").textContent = cards[index];
 
-            currentCard.parentNode.appendChild(newCard);
+            cardContainer.appendChild(newCard);
 
             // Animate cards
             setTimeout(() => {
-                currentCard.style.transform = `translateX(${direction === 'right' ? '-100%' : '100%'})`;
+                currentCard.style.transform = `translateX(${direction === "right" ? "-100%" : "100%"})`;
                 currentCard.style.opacity = 0;
 
-                newCard.style.transform = 'translateX(0)';
+                newCard.style.transform = "translateX(0)";
                 newCard.style.opacity = 1;
 
                 currentIndex = index;
 
-                // Remove old card after animation
+                // Remove the old card after animation
                 setTimeout(() => currentCard.remove(), 500);
             }, 50);
         }
 
-        leftTap.addEventListener('click', () => {
-            const newIndex = getNextCard();
-            showCard(newIndex, 'left');
+        cardContainer.addEventListener("click", (e) => {
+            const rect = cardContainer.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+
+            if (x < rect.width / 3) {
+                showCard(currentIndex - 1, "left");
+            } else if (x > (2 * rect.width) / 3) {
+                showCard(currentIndex + 1, "right");
+            }
         });
 
-        rightTap.addEventListener('click', () => {
-            const newIndex = getNextCard();
-            showCard(newIndex, 'right');
-        });
-
-        refreshButton.addEventListener('click', () => {
-            usedCards = [];
+        refreshButton.addEventListener("click", () => {
+            if (navigator.vibrate) navigator.vibrate(100); // Vibrate on refresh if supported
             currentIndex = 0;
             location.reload();
-        });
-
-        shareButton.addEventListener('click', async () => {
-            const canvas = await html2canvas(currentCard, { scale: 2 });
-            const dataUrl = canvas.toDataURL('image/png');
-
-            if (navigator.canShare && navigator.canShare({ files: [] })) {
-                const blob = await (await fetch(dataUrl)).blob();
-                const file = new File([blob], 'card.png', { type: 'image/png' });
-
-                navigator.share({
-                    files: [file],
-                    title: 'Shared Card',
-                    text: 'Check out this card!',
-                }).catch((error) => console.error('Share failed:', error));
-            } else {
-                const link = document.createElement('a');
-                link.href = dataUrl;
-                link.download = 'card.png';
-                link.click();
-            }
         });
 
         window.onload = fetchCards;
