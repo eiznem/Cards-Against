@@ -41,11 +41,20 @@
             border-radius: 15px;
             position: absolute;
             opacity: 1;
-            transition: opacity 0.5s ease; /* Fade transition */
+            transform: scale(1);
+            transition: transform 0.5s ease, opacity 0.5s ease; /* Smooth grow-in and fade */
         }
 
         .hidden {
             opacity: 0;
+        }
+
+        .grow {
+            transform: scale(1);
+        }
+
+        .shrink {
+            transform: scale(0);
         }
 
         /* Navigation Buttons */
@@ -64,11 +73,11 @@
         }
 
         .nav-button.left {
-            left: -60px;
+            left: 10px; /* Closer to the card */
         }
 
         .nav-button.right {
-            right: -60px;
+            right: 10px; /* Closer to the card */
         }
 
         .nav-button:hover {
@@ -115,7 +124,7 @@
 </head>
 <body>
     <div id="card-container">
-        <img id="current-card" class="card-image" alt="Card Image" src="">
+        <img id="current-card" class="card-image grow" alt="Card Image" src="">
     </div>
 
     <!-- Navigation Buttons -->
@@ -197,13 +206,16 @@
         function showCard(index) {
             if (index < 0 || index >= cards.length) return;
 
-            currentCard.classList.add("hidden"); // Fade out
+            currentCard.classList.add("shrink"); // Shrink current card
+            currentCard.classList.remove("grow");
+
             setTimeout(() => {
                 renderCard(cards[index], currentCard).then(() => {
-                    currentCard.classList.remove("hidden"); // Fade in
+                    currentCard.classList.add("grow"); // Grow in new card
+                    currentCard.classList.remove("shrink");
                 });
                 currentIndex = index;
-            }, 500); // Wait for fade-out
+            }, 500); // Wait for shrink
         }
 
         prevButton.addEventListener("click", () => {
