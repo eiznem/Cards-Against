@@ -10,7 +10,7 @@
         body {
             margin: 0;
             font-family: 'Helvetica Neue';
-            background: radial-gradient(circle, #222222, #444444);
+            background: radial-gradient(circle, #222222, #111111, #333333, #444444);
             color: white;
             display: flex;
             justify-content: center;
@@ -40,7 +40,7 @@
             width: 90%;
             opacity: 1;
             position: relative;
-            transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth fade and slide */
+            transition: opacity 0.75s ease, transform 0.75s ease; /* Slower fade and slide */
         }
 
         .hidden-left {
@@ -50,6 +50,16 @@
 
         .hidden-right {
             opacity: 0;
+            transform: translateX(100%);
+        }
+
+        .visible-left {
+            opacity: 1;
+            transform: translateX(-100%);
+        }
+
+        .visible-right {
+            opacity: 1;
             transform: translateX(100%);
         }
 
@@ -93,8 +103,8 @@
             background: linear-gradient(135deg, #6A11CB, #2575FC); /* Purple gradient */
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 40px; /* Smaller button */
+            height: 40px; /* Smaller button */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -163,18 +173,22 @@
 
             // Apply exit animation
             cardText.classList.remove("visible");
-            cardText.classList.add(direction === "left" ? "hidden-right" : "hidden-left");
+            cardText.classList.add(direction === "left" ? "hidden-left" : "hidden-right");
 
             setTimeout(() => {
                 // Update card content
                 cardText.textContent = cards[index];
 
-                // Apply entry animation
+                // Apply entry animation with reversed directions
                 cardText.classList.remove("hidden-left", "hidden-right");
-                cardText.classList.add("visible");
+                cardText.classList.add(direction === "left" ? "visible-right" : "visible-left");
 
+                setTimeout(() => {
+                    cardText.classList.remove("visible-left", "visible-right");
+                    cardText.classList.add("visible");
+                }, 750); // Transition duration for entry
                 currentIndex = index;
-            }, 500); // Duration of fade-out
+            }, 750); // Transition duration for exit
         }
 
         prevButton.addEventListener("click", () => {
