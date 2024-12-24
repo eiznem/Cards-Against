@@ -10,7 +10,7 @@
         body {
             margin: 0;
             font-family: 'Helvetica Neue';
-            background: radial-gradient(circle, #111111, #000000, #111111, #444444);
+            background: radial-gradient(circle, #222222, #111111, #444444);
             color: white;
             display: flex;
             justify-content: center;
@@ -32,15 +32,16 @@
             background-color: black;
         }
 
-        #card-text {
+        .card {
             font-size: 2rem;
             text-align: center;
             padding: 20px;
             line-height: 1.5;
-            width: 90%;
+            width: 100%;
+            position: absolute;
             opacity: 1;
-            position: relative;
-            transition: opacity 0.75s ease, transform 0.75s ease; /* Smooth fade and slide */
+            transform: translateX(0);
+            transition: opacity 0.75s ease, transform 0.75s ease;
         }
 
         .hidden-left {
@@ -67,18 +68,18 @@
             border: none;
             color: white;
             cursor: pointer;
-            font-size: 2rem; /* Adjusted size */
+            font-size: 2rem;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
         .nav-button.left {
-            left: -20px; /* Closer to the card */
+            left: -20px;
         }
 
         .nav-button.right {
-            right: -20px; /* Closer to the card */
+            right: -20px;
         }
 
         .nav-button:hover {
@@ -89,12 +90,12 @@
         #refresh-button {
             position: absolute;
             top: 10px;
-            left: 10px; /* Closer to edge */
-            background: linear-gradient(135deg, #6A11CB, #2575FC); /* Purple gradient */
+            left: 10px;
+            background: linear-gradient(135deg, #6A11CB, #2575FC);
             border: none;
             border-radius: 50%;
-            width: 40px; /* Smaller button */
-            height: 40px; /* Smaller button */
+            width: 50px;
+            height: 50px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -102,8 +103,8 @@
         }
 
         .button-icon {
-            width: 50%; /* Smaller icon */
-            height: 50%;
+            width: 60%;
+            height: 60%;
             fill: none;
             stroke: white;
             stroke-width: 2.5;
@@ -114,7 +115,8 @@
 </head>
 <body>
     <div id="card-container">
-        <div id="card-text" class="visible">Loading...</div>
+        <div id="current-card" class="card visible">Loading...</div>
+        <div id="next-card" class="card hidden-right"></div>
     </div>
 
     <!-- Navigation Buttons -->
@@ -132,7 +134,9 @@
         let cards = [];
         let currentIndex = 0;
 
-        const cardText = document.getElementById("card-text");
+        const cardContainer = document.getElementById("card-container");
+        const currentCard = document.getElementById("current-card");
+        const nextCard = document.getElementById("next-card");
         const prevButton = document.getElementById("prev-button");
         const nextButton = document.getElementById("next-button");
         const refreshButton = document.getElementById("refresh-button");
@@ -154,27 +158,37 @@
             cards = shuffle(cards);
 
             if (cards.length > 0) {
-                cardText.textContent = cards[currentIndex];
+                currentCard.textContent = cards[currentIndex];
             }
         }
 
         function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
-            // Apply exit animation
-            cardText.classList.remove("visible");
-            cardText.classList.add(direction === "left" ? "hidden-left" : "hidden-right");
+            // Determine the exit and entry directions
+            const exitClass = direction === "left" ? "hidden-left" : "hidden-right";
+            const enterClass = direction === "left" ? "hidden-right" : "hidden-left";
+
+            // Set the next card's content
+            nextCard.textContent = cards[index];
+
+            // Prepare the next card for entry
+            nextCard.classList.remove("visible", "hidden-left", "hidden-right");
+            nextCard.classList.add(enterClass);
+
+            // Animate the current card out
+            currentCard.classList.remove("visible");
+            currentCard.classList.add(exitClass);
 
             setTimeout(() => {
-                // Update card content
-                cardText.textContent = cards[index];
+                // Swap current and next card roles
+                currentCard.textContent = nextCard.textContent;
+                currentCard.classList.remove("hidden-left", "hidden-right");
+                currentCard.classList.add("visible");
 
-                // Apply entry animation directly from the intended direction
-                cardText.classList.remove("hidden-left", "hidden-right");
-                cardText.classList.add("visible");
-
+                nextCard.classList.remove("visible");
                 currentIndex = index;
-            }, 750); // Duration of fade-out
+            }, 750); // Transition duration
         }
 
         prevButton.addEventListener("click", () => {
