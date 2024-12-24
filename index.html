@@ -149,7 +149,7 @@
 </head>
 <body>
     <div id="card-container">
-        <div class="version-label">Version 1.0.6</div>
+        <div class="version-label">Version 1.0.7</div>
         <div id="current-card" class="card">Loading...</div>
         <div id="next-card" class="card"></div>
     </div>
@@ -220,18 +220,17 @@
             // Animate the outgoing card
             currentCard.className = `card ${exitClass}`;
 
-            // Start incoming card after outgoing card finishes
+            // Start incoming card immediately
+            nextCard.className = `card ${enterClass}`;
+
+            // Finalize swap after animation
             setTimeout(() => {
-                nextCard.className = `card ${enterClass}`;
-                setTimeout(() => {
-                    // Swap roles
-                    currentCard.textContent = nextCard.textContent;
-                    currentCard.className = "card";
-                    nextCard.className = "card";
-                    previousIndex = currentIndex;
-                    currentIndex = index;
-                }, 600);
-            }, 00);
+                currentCard.textContent = nextCard.textContent;
+                currentCard.className = "card";
+                nextCard.className = "card";
+                previousIndex = currentIndex;
+                currentIndex = index;
+            }, 600);
         }
 
         prevButton.addEventListener("click", () => {
