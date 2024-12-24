@@ -24,7 +24,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: calc(25% / 4); /* Space between buttons set to 1/4 of button height */
         }
 
         .deck-button {
@@ -36,6 +36,9 @@
             color: white;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 300px; /* Ensures equal width for all buttons */
+            height: 60px; /* Ensures equal height for all buttons */
+            text-align: center;
         }
 
         .deck-button:hover {
@@ -203,9 +206,13 @@
     </button>
 
     <script>
+        // Array to hold the card prompts loaded from the selected deck
         let cards = [];
+
+        // Index to track the currently displayed card
         let currentIndex = 0;
 
+        // DOM elements for dynamically updating content and controls
         const currentCard = document.getElementById("current-card");
         const nextCard = document.getElementById("next-card");
         const prevButton = document.getElementById("prev-button");
@@ -217,66 +224,77 @@
         const versionLabel = document.getElementById("version-label");
         const deckLabel = document.getElementById("deck-label");
 
+        // Function to dynamically load available decks and create buttons for selection
         async function loadDecks() {
             const availableDecks = ["VoApps Cards.csv", "Ex-Mormon Cards.csv"];
 
+            // Loop through each deck and create a button
             availableDecks.forEach((deck) => {
-                const button = document.createElement("button");
-                button.textContent = deck.replace(".csv", "");
-                button.className = "deck-button";
-                button.addEventListener("click", () => selectDeck(deck));
-                deckButtons.appendChild(button);
+                const button = document.createElement("button"); // Create a button element
+                button.textContent = deck.replace(".csv", ""); // Display deck name without .csv extension
+                button.className = "deck-button"; // Apply CSS styles for deck buttons
+                button.addEventListener("click", () => selectDeck(deck)); // Add click event to load the selected deck
+                deckButtons.appendChild(button); // Append the button to the selection screen
             });
         }
 
+        // Function to handle deck selection and initialize the game UI
         async function selectDeck(deck) {
-            const deckName = deck.replace(".csv", "");
-            document.title = `${deckName} - Black`;
-            deckLabel.textContent = deckName;
-            versionLabel.textContent = "Version 1.0.9";
-            deckSelection.style.display = "none";
-            cardContainer.style.display = "flex";
-            prevButton.style.display = "block";
+            const deckName = deck.replace(".csv", ""); // Format the deck name for display
+            document.title = `${deckName} - Black`; // Update the page title dynamically
+            deckLabel.textContent = deckName; // Update the deck label at the bottom-left
+            versionLabel.textContent = "Version 1.0.9"; // Display the app version
+            deckSelection.style.display = "none"; // Hide the deck selection screen
+            cardContainer.style.display = "flex"; // Show the card container
+            prevButton.style.display = "block"; // Show navigation buttons
             nextButton.style.display = "block";
             refreshButton.style.display = "block";
 
+            // Fetch the contents of the selected deck
             const response = await fetch(deck);
-            const text = await response.text();
+            const text = await response.text(); // Retrieve the deck content as text
+
+            // Split the content into individual cards and filter out empty lines
             cards = text.split("\n").map((card) => card.trim()).filter((card) => card !== "");
-            currentCard.textContent = cards[currentIndex];
+            currentCard.textContent = cards[currentIndex]; // Display the first card in the deck
         }
 
+        // Function to handle card navigation and transitions
         function showCard(index) {
-            if (index < 0 || index >= cards.length) return;
+            if (index < 0 || index >= cards.length) return; // Prevent navigating out of bounds
 
-            currentCard.classList.add("fade-out");
+            currentCard.classList.add("fade-out"); // Start fade-out animation
 
             setTimeout(() => {
-                currentCard.textContent = cards[index];
-                currentCard.classList.remove("fade-out");
-                currentCard.classList.add("fade-in");
+                currentCard.textContent = cards[index]; // Update the card content
+                currentCard.classList.remove("fade-out"); // Remove fade-out class
+                currentCard.classList.add("fade-in"); // Start fade-in animation
 
                 setTimeout(() => {
-                    currentCard.classList.remove("fade-in");
-                }, 600);
+                    currentCard.classList.remove("fade-in"); // Remove fade-in class after animation
+                }, 600); // Duration of fade-in animation
 
-                currentIndex = index;
-            }, 600);
+                currentIndex = index; // Update the current card index
+            }, 600); // Duration of fade-out animation
         }
 
+        // Event listener for navigating to the previous card
         prevButton.addEventListener("click", () => {
-            showCard(currentIndex - 1);
+            showCard(currentIndex - 1); // Navigate to the previous card
         });
 
+        // Event listener for navigating to the next card
         nextButton.addEventListener("click", () => {
-            showCard(currentIndex + 1);
+            showCard(currentIndex + 1); // Navigate to the next card
         });
 
+        // Event listener for refreshing the page and resetting the game
         refreshButton.addEventListener("click", () => {
-            currentIndex = 0;
-            location.reload();
+            currentIndex = 0; // Reset the card index
+            location.reload(); // Reload the page to refresh the game
         });
 
+        // Load the deck selection screen when the page loads
         loadDecks();
     </script>
 </body>
