@@ -43,35 +43,33 @@
             position: absolute;
             opacity: 1;
             transform: translateX(0);
-            transition: opacity 1s ease, transform 1s ease;
+            transition: transform 1s ease, opacity 1s ease;
         }
 
         .hidden-left {
             opacity: 0;
             transform: translateX(-100%);
+            transition: transform 1s ease, opacity 0s; /* Instant fade */
         }
 
         .hidden-right {
             opacity: 0;
             transform: translateX(100%);
+            transition: transform 1s ease, opacity 0s; /* Instant fade */
         }
 
-        .fade-in-left {
+        .fade-in-center {
             opacity: 1;
             transform: translateX(0);
+            transition: opacity 1s ease, transform 1s ease; /* Fade-in only in center */
         }
 
-        .fade-in-right {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .fade-out-left {
+        .off-screen-left {
             opacity: 0;
             transform: translateX(-100%);
         }
 
-        .fade-out-right {
+        .off-screen-right {
             opacity: 0;
             transform: translateX(100%);
         }
@@ -181,21 +179,21 @@
         function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
-            // Set exit class for the current card
-            const exitClass = direction === "left" ? "fade-out-left" : "fade-out-right";
-            const enterClass = direction === "left" ? "fade-in-right" : "fade-in-left";
+            // Determine the exit and entry directions
+            const exitClass = direction === "left" ? "hidden-left" : "hidden-right";
+            const enterClass = direction === "left" ? "off-screen-right" : "off-screen-left";
 
             // Set the next card's content and prepare it for entry
             nextCard.textContent = cards[index];
-            nextCard.className = `card ${direction === "left" ? "hidden-right" : "hidden-left"}`;
+            nextCard.className = `card ${enterClass}`;
 
-            // Animate the current card out
-            currentCard.classList.add(exitClass);
+            // Animate the current card out instantly
+            currentCard.className = `card ${exitClass}`;
 
             // Wait for the current card's exit animation to complete
             setTimeout(() => {
-                // Animate the next card in
-                nextCard.className = `card ${enterClass}`;
+                // Animate the next card into the center with fade-in
+                nextCard.className = `card fade-in-center`;
 
                 // Swap roles: make the next card the current card
                 setTimeout(() => {
@@ -204,7 +202,7 @@
                     nextCard.className = "card";
                     currentIndex = index;
                 }, 1000); // Wait for the next card's fade-in to complete
-            }, 1000); // Wait for the current card's fade-out to complete
+            }, 0); // No delay for the outgoing card to fade out
         }
 
         prevButton.addEventListener("click", () => {
