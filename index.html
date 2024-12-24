@@ -1,190 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ex-Mormon Black Cards</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
-
-    <!-- Required for iOS PWA -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Black Cards">
-
-    <!-- Icons for iOS -->
-    <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Cards_Against_Humanity_logo.png/512px-Cards_Against_Humanity_logo.png">
-
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: black;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        #card-container {
-            text-align: center;
-            border-radius: 10px;
-            background-color: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 10px white;
-            width: 90%;
-            height: 55%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2rem;
-            text-align: center;
-            transition: transform 0.5s ease;
-            padding: 20px;
-        }
-
-        .hidden {
-            opacity: 0;
-        }
-    </style>
-</head>
-<body>
-    <div id="card-container">
-        <div id="current-card" class="card">Loading...</div>
-        <div id="next-card" class="card hidden"></div>
-    </div>
-
     <script>
-        // Ex-Mormon-themed CSV data with 100 prompts
-        const csvData = `
-When I left the church, I finally found ______.
-What’s in the bishop’s secret drawer?
-The missionaries came over and wouldn’t stop talking about ______.
-Joseph Smith’s final revelation was about ______.
-After tithing 10% of my income, I can finally afford ______.
-Celestial marriage sounds great, but it’s really just ______.
-The Relief Society’s secret weapon is ______.
-What happens in the temple, stays in the temple, except for ______.
-I was excommunicated for ______.
-The golden plates were actually ______.
-Brigham Young’s best-kept secret was ______.
-Sunday mornings are now dedicated to ______.
-BYU’s honor code strictly forbids ______.
-The Word of Wisdom conveniently ignores ______.
-The real reason for the handcart disaster was ______.
-The priesthood session is all about ______.
-Sacrament bread pairs best with ______.
-Testimony meetings always include a story about ______.
-If Joseph Smith were alive today, he’d be on ______.
-The real reason for Family Home Evening is ______.
-What’s buried in the backyard of the bishop’s house?
-Pioneer Day would be better with ______.
-The real reason I left the church is ______.
-How do you turn tithing into ______?
-The celestial kingdom is overrated because it has too much ______.
-The choir director was caught sneaking ______ into the hymnals.
-The primary program secretly teaches kids about ______.
-The truth behind polygamy is ______.
-What’s really happening during general conference?
-The quorum of the twelve was distracted by ______.
-Nothing prepares you for a mission like ______.
-The temple recommend interview secretly checks for ______.
-Kolob is actually home to ______.
-When I read the CES Letter, I finally understood ______.
-The one thing I miss about church is ______.
-What’s hidden in the church archives?
-What does a Mormon bishop dream about at night?
-Fast and testimony meeting would be better with ______.
-The only thing worse than a ward potluck is ______.
-What really happens in the celestial room?
-The true meaning of the phrase “modest is hottest” is ______.
-Zion’s camp was actually a cover-up for ______.
-The Spirit left the meeting when someone mentioned ______.
-My first temple experience was ruined by ______.
-The best part about not being Mormon anymore is ______.
-I baptized ______ in my pool last summer.
-The missionaries secretly listen to ______ at night.
-The best way to leave the church is by ______.
-The real reason for the Mountain Meadows Massacre was ______.
-When the prophet speaks, ______ happens.
-The worst part of EFY was ______.
-My seminary teacher couldn’t stop talking about ______.
-What’s hiding in the bottom of the sacrament cups?
-What does the Holy Ghost really think about ______?
-Ward council meetings always devolve into discussions about ______.
-The Relief Society presidency is hiding ______ in the closet.
-Eternal progression sounds nice until you realize it involves ______.
-What really happened during Joseph Smith’s treasure hunts?
-Stake conference got wild when someone mentioned ______.
-The missionaries caught me watching ______.
-The real purpose of ministering is ______.
-What is the bishop hiding under his desk?
-The Young Women’s theme is secretly about ______.
-Home teaching would have been easier if it involved ______.
-The Nauvoo Expositor was right about ______.
-The real reason for the Kirtland bank failure was ______.
-The nursery leader quit after too much ______.
-Fasting all day only makes me think about ______.
-Family history is just an excuse to find out about ______.
-The Seventies quorum is planning ______ for their next meeting.
-The real reason we “ponderize” scriptures is ______.
-What does the bishop’s wife actually know about ______?
-BYU students are majoring in ______.
-Temple covenants sound nice until you realize they include ______.
-Mormon memes are the only good thing about ______.
-What’s really happening in the bishop’s office late at night?
-The funniest thing I ever heard in church was about ______.
-The real reason for stake dances was ______.
-I caught the ward organist playing ______ during sacrament meeting.
-Nothing ruins a Pioneer Day parade like ______.
-The funniest story from my mission involves ______.
-I left the church and immediately started ______.
-The Mormon Tabernacle Choir secretly sings about ______.
-Stake presidents are secretly obsessed with ______.
-What’s really in the sealed portion of the plates?
-CTR actually stands for ______.
-The Relief Society bake sale included a surprising amount of ______.
-The worst sacrament talk I ever heard was about ______.
-What do Mormons do after church that no one talks about?
-Leaving the church taught me how to ______.
-`;
-
-        let cards = csvData.trim().split('\n').map(card => card.trim()).filter(card => card !== "");
-        let usedCards = [];
+        let cards = [];
         let currentIndex = 0;
 
-        // Show card at index
-        function showCard(index, direction) {
-            const currentCard = document.getElementById('current-card');
-            const nextCard = document.getElementById('next-card');
+        const currentCard = document.getElementById('current-card');
+        const nextCard = document.getElementById('next-card');
 
+        // Fetch the CSV file and parse the data
+        async function fetchCards() {
+            const response = await fetch('cards.csv');
+            const text = await response.text();
+            cards = text.split('\n').map(card => card.trim()).filter(card => card !== "");
+
+            // Load the first card
+            if (cards.length > 0) {
+                currentCard.textContent = cards[currentIndex];
+            }
+        }
+
+        function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
-            nextCard.innerText = cards[index];
-            nextCard.style.transform = `translateX(${direction === 'left' ? '100%' : '-100%'})`;
-            nextCard.classList.remove('hidden');
+            nextCard.textContent = cards[index];
+            nextCard.style.transform = `rotateY(${direction === 'left' ? '-180deg' : '180deg'})`;
 
             setTimeout(() => {
-                nextCard.style.transform = 'translateX(0)';
-                currentCard.style.transform = `translateX(${direction === 'left' ? '-100%' : '100%'})`;
+                currentCard.style.transform = `rotateY(${direction === 'left' ? '180deg' : '-180deg'})`;
+                nextCard.style.transform = 'rotateY(0deg)';
 
                 setTimeout(() => {
-                    currentCard.innerText = cards[index];
-                    currentCard.style.transform = 'translateX(0)';
-                    nextCard.classList.add('hidden');
-                }, 500);
+                    currentCard.textContent = cards[index];
+                    currentCard.style.transform = 'rotateY(0deg)';
+                }, 300);
             }, 50);
 
             currentIndex = index;
@@ -208,8 +54,6 @@ Leaving the church taught me how to ______.
             }
         });
 
-        // Load the first card
-        window.onload = () => showCard(currentIndex, 'left');
+        // Fetch cards on page load
+        window.onload = fetchCards;
     </script>
-</body>
-</html>
