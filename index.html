@@ -7,6 +7,8 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         body {
             margin: 0;
@@ -38,18 +40,18 @@
         .card-text {
             font-size: 2rem;
             text-align: center;
-            transition: opacity 1s ease, transform 1s ease; /* Slower animation */
+            transition: opacity 1s ease, transform 1s ease; /* Smooth and slower animation */
         }
 
         /* Modern Buttons */
         .button {
             position: absolute;
-            bottom: 80px; /* Higher positioning for visibility */
+            bottom: 80px;
             background: linear-gradient(135deg, #6A11CB, #2575FC); /* Purple gradient */
             border: none;
             border-radius: 50%;
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -72,8 +74,8 @@
         }
 
         .button-icon {
-            width: 50%;
-            height: 50%;
+            width: 40%; /* Smaller icon size */
+            height: 40%;
             fill: none;
             stroke: white;
             stroke-width: 2.5;
@@ -171,18 +173,27 @@
         });
 
         shareButton.addEventListener("click", async () => {
-            const textToShare = cards[currentIndex];
-            if (navigator.share) {
+            const canvas = await html2canvas(cardContainer, { scale: 2 });
+            const dataUrl = canvas.toDataURL("image/png");
+
+            if (navigator.canShare && navigator.canShare({ files: [] })) {
+                const blob = await (await fetch(dataUrl)).blob();
+                const file = new File([blob], "card.png", { type: "image/png" });
+
                 try {
                     await navigator.share({
-                        text: `Check out this card: ${textToShare}`,
-                        title: "Ex-Mormon Black Card",
+                        files: [file],
+                        title: "Shared Card",
+                        text: "Check out this card!",
                     });
-                } catch (err) {
-                    console.error("Share failed:", err);
+                } catch (error) {
+                    console.error("Share failed:", error);
                 }
             } else {
-                alert("Sharing not supported on this device.");
+                const link = document.createElement("a");
+                link.href = dataUrl;
+                link.download = "card.png";
+                link.click();
             }
         });
 
