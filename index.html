@@ -12,7 +12,7 @@
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             background: radial-gradient(circle, #222222 60%, black 100%);
             color: white;
             display: flex;
@@ -40,7 +40,6 @@
             height: 100%;
             border-radius: 15px;
             position: absolute;
-            transition: transform 0.5s ease, opacity 0.5s ease;
         }
 
         /* Buttons */
@@ -84,7 +83,6 @@
 <body>
     <div id="card-container">
         <img id="current-card" class="card-image" alt="Card Image" src="">
-        <img id="next-card" class="card-image" alt="Next Card Image" src="" style="opacity: 0;">
     </div>
 
     <button id="refresh-button" class="button">
@@ -104,7 +102,6 @@
 
         const cardContainer = document.getElementById("card-container");
         const currentCard = document.getElementById("current-card");
-        const nextCard = document.getElementById("next-card");
         const refreshButton = document.getElementById("refresh-button");
         const shareButton = document.getElementById("share-button");
 
@@ -157,26 +154,10 @@
             tempDiv.remove();
         }
 
-        function showCard(index, direction) {
+        function showCard(index) {
             if (index < 0 || index >= cards.length) return;
-
-            renderCard(cards[index], nextCard).then(() => {
-                nextCard.style.opacity = 1;
-                nextCard.style.transform = `translateX(${direction === "right" ? "100%" : "-100%"})`;
-
-                setTimeout(() => {
-                    currentCard.style.transform = `translateX(${direction === "right" ? "-100%" : "100%"})`;
-                    nextCard.style.transform = "translateX(0)";
-
-                    setTimeout(() => {
-                        currentCard.src = nextCard.src;
-                        currentCard.style.transform = "translateX(0)";
-                        nextCard.style.opacity = 0;
-                    }, 500);
-                }, 50);
-
-                currentIndex = index;
-            });
+            renderCard(cards[index], currentCard);
+            currentIndex = index;
         }
 
         cardContainer.addEventListener("click", (e) => {
@@ -184,9 +165,9 @@
             const x = e.clientX - rect.left;
 
             if (x < rect.width / 3) {
-                showCard(currentIndex - 1, "left");
+                showCard(currentIndex - 1);
             } else if (x > (2 * rect.width) / 3) {
-                showCard(currentIndex + 1, "right");
+                showCard(currentIndex + 1);
             }
         });
 
@@ -212,10 +193,7 @@
                     console.error("Share failed:", error);
                 }
             } else {
-                const a = document.createElement("a");
-                a.href = link;
-                a.download = "card.png";
-                a.click();
+                alert("Your device does not support sharing this image.");
             }
         });
 
