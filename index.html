@@ -76,7 +76,7 @@
         #refresh-button, #share-button {
             position: absolute;
             bottom: 15px;
-            background: linear-gradient(135deg, #FF6B6B, #FFA726); /* Visible gradient */
+            background: linear-gradient(135deg, #FF6B6B, #FFA726);
             border: none;
             border-radius: 50%;
             width: 50px; /* Smaller buttons */
@@ -147,6 +147,7 @@
     <script>
         let cards = [];
         let currentIndex = 0;
+        let usedCards = [];
 
         const currentCard = document.getElementById('current-card');
         const cardText = document.getElementById('card-text');
@@ -169,47 +170,64 @@
             const response = await fetch('cards.csv');
             const text = await response.text();
             cards = text.split('\n').map(card => card.trim()).filter(card => card !== "");
-
             cards = shuffle(cards);
+
             if (cards.length > 0) {
                 cardText.textContent = cards[currentIndex];
             }
         }
 
+        function getNextCard() {
+            // Get the next unused card, loop through the deck if all are used
+            if (usedCards.length === cards.length) {
+                usedCards = [];
+            }
+            let nextCard;
+            do {
+                nextCard = Math.floor(Math.random() * cards.length);
+            } while (usedCards.includes(nextCard));
+            usedCards.push(nextCard);
+            return nextCard;
+        }
+
         function showCard(index, direction) {
-            if (index < 0 || index >= cards.length) return;
+            const newCardText = cards[index];
+            if (!newCardText) return;
 
-            // Slide current card out in the opposite direction
-            currentCard.style.opacity = 0;
-            currentCard.style.transform = `translateX(${direction === 'right' ? '-100%' : '100%'})`;
-
-            // Add the new card
             const newCard = currentCard.cloneNode(true);
             newCard.style.transform = `translateX(${direction === 'right' ? '100%' : '-100%'})`;
             newCard.style.opacity = 0;
-            cardText.textContent = cards[index];
+            newCard.querySelector('.card-text').textContent = newCardText;
+
             currentCard.parentNode.appendChild(newCard);
 
-            // Slide the new card into view
+            // Animate cards
             setTimeout(() => {
+                currentCard.style.transform = `translateX(${direction === 'right' ? '-100%' : '100%'})`;
+                currentCard.style.opacity = 0;
+
                 newCard.style.transform = 'translateX(0)';
                 newCard.style.opacity = 1;
+
                 currentIndex = index;
 
-                // Remove the old card
+                // Remove old card after animation
                 setTimeout(() => currentCard.remove(), 500);
             }, 50);
         }
 
         leftTap.addEventListener('click', () => {
-            showCard(currentIndex - 1, 'left');
+            const newIndex = getNextCard();
+            showCard(newIndex, 'left');
         });
 
         rightTap.addEventListener('click', () => {
-            showCard(currentIndex + 1, 'right');
+            const newIndex = getNextCard();
+            showCard(newIndex, 'right');
         });
 
         refreshButton.addEventListener('click', () => {
+            usedCards = [];
             currentIndex = 0;
             location.reload();
         });
