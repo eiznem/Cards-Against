@@ -195,11 +195,11 @@
         }
 
         prevButton.addEventListener("click", () => {
-            showCard(currentIndex - 1, "right");
+            showCard(currentIndex + 1, "right");
         });
 
         nextButton.addEventListener("click", () => {
-            showCard(currentIndex + 1, "left");
+            showCard(currentIndex - 1, "left");
         });
 
         refreshButton.addEventListener("click", () => {
