@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ex-Mormon Black Cards</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
-
     <style>
-        /* General Styles */
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -52,22 +48,15 @@
             box-sizing: border-box;
         }
 
-        .card-text {
-            display: inline-block;
-            position: relative;
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-
-        /* Refresh Button */
         #refresh-button {
             position: absolute;
             top: 10px;
             right: 10px;
             background-color: white;
-            border: 2px solid chartreuse;
+            border: 4px solid chartreuse; /* Larger border */
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
+            width: 70px; /* Larger button */
+            height: 70px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -76,32 +65,64 @@
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
-        #refresh-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px chartreuse;
-        }
-
         #refresh-icon {
-            width: 90%; /* Larger icon size */
-            height: 90%;
+            width: 100%; /* Larger icon */
+            height: 100%;
             fill: none;
             stroke: chartreuse;
-            stroke-width: 3; /* Thicker stroke */
+            stroke-width: 3;
             stroke-linecap: round;
             stroke-linejoin: round;
-            transition: transform 1.5s ease; /* Exaggerated spin animation */
+            transition: transform 1.5s ease;
         }
 
         #refresh-button:active #refresh-icon {
             transform: rotate(1080deg); /* 3 full rotations */
         }
 
+        #refresh-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px chartreuse;
+        }
+
         #refresh-button:active {
-            transform: scale(1.2); /* Button scaling during animation */
+            transform: scale(1.2); /* Scaling during animation */
+        }
+
+        /* Left Indicator */
+        #left-indicator {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FFFFFF" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>') no-repeat center;
+            background-size: contain;
+            opacity: 0.5; /* Default opacity */
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        /* Right Indicator */
+        #right-indicator {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FFFFFF" d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>') no-repeat center;
+            background-size: contain;
+            opacity: 0.5; /* Default opacity */
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
         }
     </style>
 </head>
 <body>
+    <div id="left-indicator"></div>
+    <div id="right-indicator"></div>
     <button id="refresh-button">
         <svg id="refresh-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
@@ -112,7 +133,6 @@
             <span id="card-text" class="card-text">Loading...</span>
         </div>
     </div>
-
     <script>
         let cards = [];
         let currentIndex = 0;
@@ -121,6 +141,8 @@
         const cardText = document.getElementById('card-text');
         const cardContainer = document.getElementById('card-container');
         const refreshButton = document.getElementById('refresh-button');
+        const leftIndicator = document.getElementById('left-indicator');
+        const rightIndicator = document.getElementById('right-indicator');
 
         // Shuffle cards using Fisher-Yates
         function shuffle(array) {
@@ -158,15 +180,26 @@
             }, 500);
         }
 
-        cardContainer.addEventListener('click', (e) => {
-            const rect = cardContainer.getBoundingClientRect();
-            const x = e.clientX - rect.left;
+        // Add touch feedback for the left indicator
+        leftIndicator.addEventListener('touchstart', () => {
+            leftIndicator.style.opacity = '1';
+            leftIndicator.style.transform = 'translateY(-50%) scale(1.2)';
+        });
+        leftIndicator.addEventListener('touchend', () => {
+            leftIndicator.style.opacity = '0.5';
+            leftIndicator.style.transform = 'translateY(-50%) scale(1)';
+            showCard(currentIndex - 1, 'left');
+        });
 
-            if (x < rect.width / 3) {
-                showCard(currentIndex - 1, 'left');
-            } else if (x > (2 * rect.width) / 3) {
-                showCard(currentIndex + 1, 'right');
-            }
+        // Add touch feedback for the right indicator
+        rightIndicator.addEventListener('touchstart', () => {
+            rightIndicator.style.opacity = '1';
+            rightIndicator.style.transform = 'translateY(-50%) scale(1.2)';
+        });
+        rightIndicator.addEventListener('touchend', () => {
+            rightIndicator.style.opacity = '0.5';
+            rightIndicator.style.transform = 'translateY(-50%) scale(1)';
+            showCard(currentIndex + 1, 'right');
         });
 
         refreshButton.addEventListener('click', () => {
