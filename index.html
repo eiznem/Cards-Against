@@ -22,22 +22,22 @@
 
         #deck-selection {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: calc(25% / 4); /* Space between buttons set to 1/4 of button height */
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
         }
 
         .deck-button {
             background: linear-gradient(135deg, #6A11CB, #2575FC);
             border: none;
             border-radius: 10px;
-            padding: 15px 30px;
-            font-size: 1.2rem;
+            padding: 10px 20px;
+            font-size: 1rem;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            width: 300px; /* Ensures equal width for all buttons */
-            height: 60px; /* Ensures equal height for all buttons */
+            width: 200px;
             text-align: center;
         }
 
@@ -54,7 +54,7 @@
             position: relative;
             width: 60%;
             max-width: 400px;
-            aspect-ratio: 1 / 1.33; /* Adjusted aspect ratio */
+            aspect-ratio: 1 / 1.33;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -65,7 +65,7 @@
         }
 
         .card {
-            font-size: calc(2rem * var(--scale-factor, 1)); /* Dynamically scale font size */
+            font-size: calc(2rem * var(--scale-factor, 1));
             text-align: center;
             padding: 20px;
             line-height: 1.3;
@@ -85,7 +85,6 @@
             opacity: 1;
         }
 
-        /* Navigation Buttons */
         .nav-button {
             position: absolute;
             top: 50%;
@@ -105,11 +104,11 @@
         }
 
         .nav-button.left {
-            left: 15%; /* Adjusted centering */
+            left: 10%;
         }
 
         .nav-button.right {
-            right: 15%; /* Adjusted centering */
+            right: 10%;
         }
 
         .nav-button:active {
@@ -122,7 +121,6 @@
             border-color: #aaaaaa;
         }
 
-        /* Refresh Button */
         #refresh-button {
             position: absolute;
             top: 10px;
@@ -148,7 +146,6 @@
             stroke-linejoin: round;
         }
 
-        /* Version Label */
         .version-label {
             position: absolute;
             bottom: 5px;
@@ -157,7 +154,6 @@
             color: rgba(255, 255, 255, 0.25);
         }
 
-        /* Deck Name Label */
         .deck-label {
             position: absolute;
             bottom: 5px;
@@ -167,16 +163,21 @@
         }
 
         @media (max-width: 768px) {
-            .card {
-                font-size: calc(1.5rem * var(--scale-factor, 1)); /* Adjust font size for iPhone */
+            #deck-selection {
+                gap: 10px;
+            }
+
+            .deck-button {
+                width: 150px;
+                padding: 10px 15px;
             }
 
             .nav-button.left {
-                left: 10%; /* Adjusted centering for mobile */
+                left: 5%;
             }
 
             .nav-button.right {
-                right: 10%; /* Adjusted centering for mobile */
+                right: 5%;
             }
         }
     </style>
@@ -194,11 +195,9 @@
         <div id="next-card" class="card"></div>
     </div>
 
-    <!-- Navigation Buttons -->
     <button class="nav-button left" id="prev-button" style="display: none;">&laquo;</button>
     <button class="nav-button right" id="next-button" style="display: none;">&raquo;</button>
 
-    <!-- Refresh Button -->
     <button id="refresh-button" style="display: none;">
         <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
@@ -206,13 +205,9 @@
     </button>
 
     <script>
-        // Array to hold the card prompts loaded from the selected deck
         let cards = [];
-
-        // Index to track the currently displayed card
         let currentIndex = 0;
 
-        // DOM elements for dynamically updating content and controls
         const currentCard = document.getElementById("current-card");
         const nextCard = document.getElementById("next-card");
         const prevButton = document.getElementById("prev-button");
@@ -224,77 +219,66 @@
         const versionLabel = document.getElementById("version-label");
         const deckLabel = document.getElementById("deck-label");
 
-        // Function to dynamically load available decks and create buttons for selection
         async function loadDecks() {
             const availableDecks = ["VoApps Cards.csv", "Ex-Mormon Cards.csv"];
 
-            // Loop through each deck and create a button
             availableDecks.forEach((deck) => {
-                const button = document.createElement("button"); // Create a button element
-                button.textContent = deck.replace(".csv", ""); // Display deck name without .csv extension
-                button.className = "deck-button"; // Apply CSS styles for deck buttons
-                button.addEventListener("click", () => selectDeck(deck)); // Add click event to load the selected deck
-                deckButtons.appendChild(button); // Append the button to the selection screen
+                const button = document.createElement("button");
+                button.textContent = deck.replace(".csv", "");
+                button.className = "deck-button";
+                button.addEventListener("click", () => selectDeck(deck));
+                deckButtons.appendChild(button);
             });
         }
 
-        // Function to handle deck selection and initialize the game UI
         async function selectDeck(deck) {
-            const deckName = deck.replace(".csv", ""); // Format the deck name for display
-            document.title = `${deckName} - Black`; // Update the page title dynamically
-            deckLabel.textContent = deckName; // Update the deck label at the bottom-left
-            versionLabel.textContent = "Version 1.0.9"; // Display the app version
-            deckSelection.style.display = "none"; // Hide the deck selection screen
-            cardContainer.style.display = "flex"; // Show the card container
-            prevButton.style.display = "block"; // Show navigation buttons
+            const deckName = deck.replace(".csv", "");
+            document.title = `${deckName} - Black`;
+            deckLabel.textContent = deckName;
+            versionLabel.textContent = "Version 1.0.9";
+            deckSelection.style.display = "none";
+            cardContainer.style.display = "flex";
+            prevButton.style.display = "block";
             nextButton.style.display = "block";
             refreshButton.style.display = "block";
 
-            // Fetch the contents of the selected deck
             const response = await fetch(deck);
-            const text = await response.text(); // Retrieve the deck content as text
-
-            // Split the content into individual cards and filter out empty lines
+            const text = await response.text();
             cards = text.split("\n").map((card) => card.trim()).filter((card) => card !== "");
-            currentCard.textContent = cards[currentIndex]; // Display the first card in the deck
+            currentCard.textContent = cards[currentIndex];
         }
 
-        // Function to handle card navigation and transitions
         function showCard(index) {
-            if (index < 0 || index >= cards.length) return; // Prevent navigating out of bounds
+            if (index < 0 || index >= cards.length) return;
 
-            currentCard.classList.add("fade-out"); // Start fade-out animation
+            currentCard.classList.add("fade-out");
 
             setTimeout(() => {
-                currentCard.textContent = cards[index]; // Update the card content
-                currentCard.classList.remove("fade-out"); // Remove fade-out class
-                currentCard.classList.add("fade-in"); // Start fade-in animation
+                currentCard.textContent = cards[index];
+                currentCard.classList.remove("fade-out");
+                currentCard.classList.add("fade-in");
 
                 setTimeout(() => {
-                    currentCard.classList.remove("fade-in"); // Remove fade-in class after animation
-                }, 600); // Duration of fade-in animation
+                    currentCard.classList.remove("fade-in");
+                }, 600);
 
-                currentIndex = index; // Update the current card index
-            }, 600); // Duration of fade-out animation
+                currentIndex = index;
+            }, 600);
         }
 
-        // Event listener for navigating to the previous card
         prevButton.addEventListener("click", () => {
-            showCard(currentIndex - 1); // Navigate to the previous card
+            showCard(currentIndex - 1);
         });
 
-        // Event listener for navigating to the next card
         nextButton.addEventListener("click", () => {
-            showCard(currentIndex + 1); // Navigate to the next card
+            showCard(currentIndex + 1);
         });
 
-        // Event listener for refreshing the page and resetting the game
         refreshButton.addEventListener("click", () => {
-            currentIndex = 0; // Reset the card index
-            location.reload(); // Reload the page to refresh the game
+            currentIndex = 0;
+            location.reload();
         });
 
-        // Load the deck selection screen when the page loads
         loadDecks();
     </script>
 </body>
