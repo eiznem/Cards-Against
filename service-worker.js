@@ -2,6 +2,7 @@ const CACHE_NAME = 'black-cards-v2';
 const CACHE_ASSETS = [
     './index.html',
     './manifest.json',
+    './cards.csv',
     'https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Cards_Against_Humanity_logo.png/512px-Cards_Against_Humanity_logo.png'
 ];
 
