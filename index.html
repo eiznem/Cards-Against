@@ -13,7 +13,7 @@
         body {
             margin: 0;
             font-family: 'Helvetica Neue';
-            background: radial-gradient(circle, #222222 60%, black 100%);
+            background: radial-gradient(circle, black 60%, #222222 100%);
             color: white;
             display: flex;
             justify-content: center;
@@ -42,19 +42,12 @@
             position: absolute;
             opacity: 1;
             transform: scale(1);
-            transition: transform 0.5s ease, opacity 0.5s ease; /* Smooth grow-in and fade */
+            transition: opacity 0.5s ease, transform 0.5s ease; /* Smooth grow-in and fade */
         }
 
         .hidden {
             opacity: 0;
-        }
-
-        .grow {
             transform: scale(1);
-        }
-
-        .shrink {
-            transform: scale(0);
         }
 
         /* Navigation Buttons */
@@ -73,11 +66,11 @@
         }
 
         .nav-button.left {
-            left: 10px; /* Closer to the card */
+            left: 20px; /* Adjusted spacing */
         }
 
         .nav-button.right {
-            right: 10px; /* Closer to the card */
+            right: 20px; /* Adjusted spacing */
         }
 
         .nav-button:hover {
@@ -124,7 +117,7 @@
 </head>
 <body>
     <div id="card-container">
-        <img id="current-card" class="card-image grow" alt="Card Image" src="">
+        <img id="current-card" class="card-image" alt="Card Image" src="">
     </div>
 
     <!-- Navigation Buttons -->
@@ -206,16 +199,13 @@
         function showCard(index) {
             if (index < 0 || index >= cards.length) return;
 
-            currentCard.classList.add("shrink"); // Shrink current card
-            currentCard.classList.remove("grow");
-
+            currentCard.classList.add("hidden"); // Fade out
             setTimeout(() => {
                 renderCard(cards[index], currentCard).then(() => {
-                    currentCard.classList.add("grow"); // Grow in new card
-                    currentCard.classList.remove("shrink");
+                    currentCard.classList.remove("hidden"); // Fade in
                 });
                 currentIndex = index;
-            }, 500); // Wait for shrink
+            }, 500); // Wait for fade-out
         }
 
         prevButton.addEventListener("click", () => {
