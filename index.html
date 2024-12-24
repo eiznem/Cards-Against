@@ -8,7 +8,7 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: radial-gradient(circle, black 60%, #222222 100%);
+            background: radial-gradient(circle at center, black 60%, #222222 100%); /* Fixed gradient */
             color: white;
             display: flex;
             justify-content: center;
@@ -30,6 +30,7 @@
             height: 60%;
             overflow: hidden;
             cursor: pointer;
+            box-shadow: 0 0 15px #ffffff; /* Subtle glow effect */
         }
 
         .card {
@@ -43,7 +44,6 @@
             text-align: center;
             background-color: black;
             border-radius: 10px;
-            box-shadow: 0 0 15px white;
             padding: 20px;
             box-sizing: border-box;
         }
@@ -91,21 +91,19 @@
 
         #left-indicator, #right-indicator {
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 0;
             width: 50%;
             height: 100%;
             cursor: pointer;
+            z-index: 10;
         }
 
         #left-indicator {
             left: 0;
-            background: linear-gradient(to right, rgba(255, 255, 255, 0.1), transparent);
         }
 
         #right-indicator {
             right: 0;
-            background: linear-gradient(to left, rgba(255, 255, 255, 0.1), transparent);
         }
     </style>
 </head>
@@ -128,10 +126,9 @@
 
         const currentCard = document.getElementById('current-card');
         const cardText = document.getElementById('card-text');
-        const cardContainer = document.getElementById('card-container');
-        const refreshButton = document.getElementById('refresh-button');
         const leftIndicator = document.getElementById('left-indicator');
         const rightIndicator = document.getElementById('right-indicator');
+        const refreshButton = document.getElementById('refresh-button');
 
         // Shuffle cards using Fisher-Yates
         function shuffle(array) {
@@ -169,10 +166,16 @@
             }, 500);
         }
 
-        // Add touch and click handling for indicators
-        leftIndicator.addEventListener('click', () => showCard(currentIndex - 1, 'left'));
-        rightIndicator.addEventListener('click', () => showCard(currentIndex + 1, 'right'));
+        // Add event listeners for left and right indicators
+        leftIndicator.addEventListener('click', () => {
+            showCard(currentIndex - 1, 'left');
+        });
 
+        rightIndicator.addEventListener('click', () => {
+            showCard(currentIndex + 1, 'right');
+        });
+
+        // Refresh button reloads the app
         refreshButton.addEventListener('click', () => {
             currentIndex = 0;
             location.reload();
