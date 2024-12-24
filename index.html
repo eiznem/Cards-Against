@@ -75,26 +75,27 @@
 
         #refresh-button, #share-button {
             position: absolute;
-            bottom: 15px;
+            bottom: 20px;
             background: linear-gradient(135deg, #FF6B6B, #FFA726);
             border: none;
             border-radius: 50%;
-            width: 50px; /* Smaller buttons */
-            height: 50px;
+            width: 60px; /* Visible button */
+            height: 60px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            z-index: 10; /* Ensure it appears above other elements */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
         }
 
         #refresh-button {
-            right: 70px;
+            right: 90px;
         }
 
         #share-button {
-            right: 10px;
+            right: 20px;
         }
 
         #refresh-icon, #share-icon {
