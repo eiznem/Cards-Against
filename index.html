@@ -40,7 +40,7 @@
             width: 90%;
             opacity: 1;
             position: relative;
-            transition: opacity 0.75s ease, transform 0.75s ease; /* Slower fade and slide */
+            transition: opacity 0.75s ease, transform 0.75s ease; /* Smooth fade and slide */
         }
 
         .hidden-left {
@@ -179,16 +179,12 @@
                 // Update card content
                 cardText.textContent = cards[index];
 
-                // Apply entry animation with reversed directions
+                // Apply entry animation directly in the intended direction
                 cardText.classList.remove("hidden-left", "hidden-right");
-                cardText.classList.add(direction === "left" ? "visible-right" : "visible-left");
+                cardText.classList.add("visible");
 
-                setTimeout(() => {
-                    cardText.classList.remove("visible-left", "visible-right");
-                    cardText.classList.add("visible");
-                }, 750); // Transition duration for entry
                 currentIndex = index;
-            }, 750); // Transition duration for exit
+            }, 750); // Duration of fade-out
         }
 
         prevButton.addEventListener("click", () => {
