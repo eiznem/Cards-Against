@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ex-Mormon Black Cards</title>
+    <title>Loading Decks...</title>
     <meta name="theme-color" content="#000000">
 
     <style>
@@ -19,11 +19,38 @@
             overflow: hidden;
         }
 
+        #deck-selection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .deck-button {
+            background: linear-gradient(135deg, #6A11CB, #2575FC);
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .deck-button:hover {
+            background: linear-gradient(135deg, #2575FC, #6A11CB);
+            transform: scale(1.05);
+        }
+
+        .deck-button:active {
+            transform: scale(0.95);
+        }
+
         #card-container {
             position: relative;
-            width: 40%; /* Vertically oriented card */
-            max-width: 350px;
-            aspect-ratio: 1 / 1.5; /* Portrait orientation (height:width = 1.5:1) */
+            width: 60%;
+            max-width: 400px;
+            aspect-ratio: 1 / 1.5;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -74,11 +101,11 @@
         }
 
         .nav-button.left {
-            left: calc(50vw - 25px - (40% + 20px)); /* Halfway between card and screen edge */
+            left: calc(25% - 25px);
         }
 
         .nav-button.right {
-            right: calc(50vw - 25px - (40% + 20px)); /* Halfway between card and screen edge */
+            right: calc(25% - 25px);
         }
 
         .nav-button:active {
@@ -128,18 +155,23 @@
     </style>
 </head>
 <body>
-    <div id="card-container">
-        <div class="version-label">Version 1.0.8</div>
+    <div id="deck-selection">
+        <h1>Select a Deck</h1>
+        <div id="deck-buttons"></div>
+    </div>
+
+    <div id="card-container" style="display: none;">
+        <div class="version-label" id="version-label">Version 1.0.9</div>
         <div id="current-card" class="card">Loading...</div>
         <div id="next-card" class="card"></div>
     </div>
 
     <!-- Navigation Buttons -->
-    <button class="nav-button left" id="prev-button">&laquo;</button>
-    <button class="nav-button right" id="next-button">&raquo;</button>
+    <button class="nav-button left" id="prev-button" style="display: none;">&laquo;</button>
+    <button class="nav-button right" id="next-button" style="display: none;">&raquo;</button>
 
     <!-- Refresh Button -->
-    <button id="refresh-button">
+    <button id="refresh-button" style="display: none;">
         <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
         </svg>
@@ -154,41 +186,55 @@
         const prevButton = document.getElementById("prev-button");
         const nextButton = document.getElementById("next-button");
         const refreshButton = document.getElementById("refresh-button");
+        const deckButtons = document.getElementById("deck-buttons");
+        const deckSelection = document.getElementById("deck-selection");
+        const cardContainer = document.getElementById("card-container");
+        const versionLabel = document.getElementById("version-label");
 
-        // Shuffle cards using Fisher-Yates
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
+        async function loadDecks() {
+            const response = await fetch("./"); // Fetch files from the same directory
+            const text = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(text, "text/html");
+            const links = Array.from(doc.querySelectorAll("a"))
+                .map((a) => a.getAttribute("href"))
+                .filter((href) => href.endsWith(".csv"));
+
+            links.forEach((link) => {
+                const button = document.createElement("button");
+                button.textContent = link.replace(".csv", "");
+                button.className = "deck-button";
+                button.addEventListener("click", () => selectDeck(link));
+                deckButtons.appendChild(button);
+            });
         }
 
-        // Fetch cards from a CSV
-        async function fetchCards() {
-            const response = await fetch("cards.csv");
+        async function selectDeck(deck) {
+            const deckName = deck.replace(".csv", "");
+            document.title = `${deckName} - Black`;
+            versionLabel.textContent = `${deckName} - Black`;
+            deckSelection.style.display = "none";
+            cardContainer.style.display = "flex";
+            prevButton.style.display = "block";
+            nextButton.style.display = "block";
+            refreshButton.style.display = "block";
+
+            const response = await fetch(deck);
             const text = await response.text();
             cards = text.split("\n").map((card) => card.trim()).filter((card) => card !== "");
-            cards = shuffle(cards);
-
-            if (cards.length > 0) {
-                currentCard.textContent = cards[currentIndex];
-            }
+            currentCard.textContent = cards[currentIndex];
         }
 
         function showCard(index) {
             if (index < 0 || index >= cards.length) return;
 
-            // Fade out the current card
             currentCard.classList.add("fade-out");
 
             setTimeout(() => {
-                // Update the content for the next card
                 currentCard.textContent = cards[index];
                 currentCard.classList.remove("fade-out");
                 currentCard.classList.add("fade-in");
 
-                // Reset the fade-in class after animation
                 setTimeout(() => {
                     currentCard.classList.remove("fade-in");
                 }, 600);
@@ -198,15 +244,11 @@
         }
 
         prevButton.addEventListener("click", () => {
-            prevButton.classList.add("active");
             showCard(currentIndex - 1);
-            setTimeout(() => prevButton.classList.remove("active"), 600);
         });
 
         nextButton.addEventListener("click", () => {
-            nextButton.classList.add("active");
             showCard(currentIndex + 1);
-            setTimeout(() => nextButton.classList.remove("active"), 600);
         });
 
         refreshButton.addEventListener("click", () => {
@@ -214,7 +256,7 @@
             location.reload();
         });
 
-        window.onload = fetchCards;
+        window.onload = loadDecks;
     </script>
 </body>
 </html>
