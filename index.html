@@ -1,3 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ex-Mormon Black Cards</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+
+    <!-- Required for iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Black Cards">
+
+    <!-- Icons for iOS -->
+    <link rel="apple-touch-icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Cards_Against_Humanity_logo.png/512px-Cards_Against_Humanity_logo.png">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            perspective: 1500px; /* Enables 3D transformations */
+        }
+
+        #card-container {
+            text-align: center;
+            position: relative;
+            background-color: black;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 90%;
+            height: 55%;
+            overflow: hidden;
+        }
+
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            text-align: center;
+            background-color: black;
+            border-radius: 10px;
+            box-shadow: 0 0 10px white;
+            backface-visibility: hidden; /* Hides the back of the card */
+            transform-origin: right center;
+            transition: transform 0.3s ease-out;
+        }
+
+        .card.next {
+            transform-origin: left center;
+        }
+    </style>
+</head>
+<body>
+    <div id="card-container">
+        <div id="current-card" class="card">Loading...</div>
+        <div id="next-card" class="card"></div>
+    </div>
+
     <script>
         let cards = [];
         let currentIndex = 0;
@@ -57,3 +129,5 @@
         // Fetch cards on page load
         window.onload = fetchCards;
     </script>
+</body>
+</html>
