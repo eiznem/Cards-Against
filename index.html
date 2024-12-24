@@ -36,7 +36,6 @@
             width: 90%;
             height: 60%;
             overflow: hidden;
-            cursor: pointer;
             box-shadow: 0 0 15px #ffffff;
         }
 
@@ -77,7 +76,7 @@
         #refresh-button, #share-button {
             position: absolute;
             bottom: 15px;
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            background: linear-gradient(135deg, #FF6B6B, #FFA726); /* Visible gradient */
             border: none;
             border-radius: 50%;
             width: 50px; /* Smaller buttons */
@@ -87,7 +86,7 @@
             align-items: center;
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.5);
         }
 
         #refresh-button {
@@ -180,17 +179,26 @@
         function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
-            // Slide current card in the opposite direction
+            // Slide current card out in the opposite direction
             currentCard.style.opacity = 0;
             currentCard.style.transform = `translateX(${direction === 'right' ? '-100%' : '100%'})`;
 
+            // Add the new card
+            const newCard = currentCard.cloneNode(true);
+            newCard.style.transform = `translateX(${direction === 'right' ? '100%' : '-100%'})`;
+            newCard.style.opacity = 0;
+            cardText.textContent = cards[index];
+            currentCard.parentNode.appendChild(newCard);
+
+            // Slide the new card into view
             setTimeout(() => {
-                cardText.textContent = cards[index];
-                currentCard.style.transform = `translateX(${direction === 'right' ? '100%' : '-100%'})`;
-                currentCard.style.opacity = 1;
-                currentCard.style.transform = 'translateX(0)';
+                newCard.style.transform = 'translateX(0)';
+                newCard.style.opacity = 1;
                 currentIndex = index;
-            }, 500);
+
+                // Remove the old card
+                setTimeout(() => currentCard.remove(), 500);
+            }, 50);
         }
 
         leftTap.addEventListener('click', () => {
