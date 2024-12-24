@@ -10,7 +10,7 @@
         body {
             margin: 0;
             font-family: 'Helvetica Neue';
-            background: radial-gradient(circle, #222222, #111111, #222222, #444444);
+            background: radial-gradient(circle, #111111, #000000, #111111, #444444);
             color: white;
             display: flex;
             justify-content: center;
@@ -51,16 +51,6 @@
         .hidden-right {
             opacity: 0;
             transform: translateX(100%);
-        }
-
-        .visible-left {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .visible-right {
-            opacity: 1;
-            transform: translateX(0);
         }
 
         .visible {
@@ -179,16 +169,12 @@
                 // Update card content
                 cardText.textContent = cards[index];
 
-                // Apply entry animation
+                // Apply entry animation directly from the intended direction
                 cardText.classList.remove("hidden-left", "hidden-right");
-                cardText.classList.add(direction === "left" ? "visible-right" : "visible-left");
+                cardText.classList.add("visible");
 
-                setTimeout(() => {
-                    cardText.classList.remove("visible-left", "visible-right");
-                    cardText.classList.add("visible");
-                }, 750); // Transition duration for entry
                 currentIndex = index;
-            }, 750); // Transition duration for exit
+            }, 750); // Duration of fade-out
         }
 
         prevButton.addEventListener("click", () => {
