@@ -45,7 +45,7 @@
 
         .card {
             width: 95%;
-            height: 100%;
+            height: calc(100% - 20px); /* Add margin to prevent cut-off */
             position: absolute;
             display: flex;
             justify-content: center;
@@ -55,16 +55,19 @@
             background-color: black;
             border-radius: 10px;
             box-shadow: 0 0 15px white;
-            opacity: 1;
-            transition: opacity 0.5s ease, background-color 0.5s ease;
             padding: 20px;
             box-sizing: border-box;
         }
 
-        #refresh-button {
+        .card-text {
+            display: inline-block;
+            position: relative;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        #refresh-button, #fullscreen-button {
             position: absolute;
             top: 10px;
-            right: 10px;
             background-color: white;
             color: black;
             border: none;
@@ -79,7 +82,16 @@
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
-        #refresh-button:hover {
+        #refresh-button {
+            right: 10px;
+            border: 2px solid chartreuse; /* Chartreuse border */
+        }
+
+        #fullscreen-button {
+            left: 10px;
+        }
+
+        #refresh-button:hover, #fullscreen-button:hover {
             background-color: gray;
             color: white;
         }
@@ -87,8 +99,11 @@
 </head>
 <body>
     <button id="refresh-button">🔄</button>
+    <button id="fullscreen-button">⛶</button>
     <div id="card-container">
-        <div id="current-card" class="card">Loading...</div>
+        <div id="current-card" class="card">
+            <span id="card-text" class="card-text">Loading...</span>
+        </div>
     </div>
 
     <script>
@@ -96,8 +111,10 @@
         let currentIndex = 0;
 
         const currentCard = document.getElementById('current-card');
+        const cardText = document.getElementById('card-text');
         const cardContainer = document.getElementById('card-container');
         const refreshButton = document.getElementById('refresh-button');
+        const fullscreenButton = document.getElementById('fullscreen-button');
 
         // Shuffle the cards array using Fisher-Yates algorithm
         function shuffle(array) {
@@ -119,23 +136,25 @@
 
             // Load the first card
             if (cards.length > 0) {
-                currentCard.textContent = cards[currentIndex];
+                cardText.textContent = cards[currentIndex];
             }
         }
 
-        function showCard(index) {
+        function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
-            // Fade out the current card
-            currentCard.style.opacity = 0;
+            // Add fade and wipe effect
+            cardText.style.opacity = 0;
+            cardText.style.transform = `translateX(${direction === 'right' ? '100%' : '-100%'})`;
 
             setTimeout(() => {
                 // Update the card content
-                currentCard.textContent = cards[index];
-                currentCard.style.backgroundColor = 'black';
+                cardText.textContent = cards[index];
 
-                // Fade in the new card
-                currentCard.style.opacity = 1;
+                // Reset the position and fade back in
+                cardText.style.transform = `translateX(${direction === 'right' ? '-100%' : '100%'})`;
+                cardText.style.opacity = 1;
+                cardText.style.transform = 'translateX(0)';
 
                 // Update the index
                 currentIndex = index;
@@ -149,20 +168,24 @@
 
             if (x < rect.width / 3) {
                 // Tap on the left third -> Go to the previous card
-                showCard(currentIndex - 1);
+                showCard(currentIndex - 1, 'left');
             } else if (x > (2 * rect.width) / 3) {
                 // Tap on the right third -> Go to the next card
-                showCard(currentIndex + 1);
+                showCard(currentIndex + 1, 'right');
             }
         });
 
         // Refresh the app and clear session cache
         refreshButton.addEventListener('click', () => {
-            // Clear session data (if applicable)
             currentIndex = 0;
-
-            // Reload the app
             location.reload();
+        });
+
+        // Enable fullscreen mode
+        fullscreenButton.addEventListener('click', () => {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
         });
 
         // Fetch cards on page load
