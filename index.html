@@ -37,11 +37,13 @@
             text-align: center;
             padding: 20px;
             line-height: 1.5;
-            width: 100%;
+            box-sizing: border-box; /* Ensures padding stays within the rectangle */
+            width: 90%; /* Added buffer around text */
+            height: 90%; /* Ensures text does not touch the edges */
             position: absolute;
             opacity: 1;
             transform: translateX(0);
-            transition: opacity 1s ease, transform 1s ease; /* Slower transitions */
+            transition: opacity 1s ease, transform 1s ease; /* Smooth transitions */
         }
 
         .hidden-left {
@@ -168,21 +170,21 @@
         function showCard(index, direction) {
             if (index < 0 || index >= cards.length) return;
 
-            // Determine the exit and entry directions
+            // Determine the exit direction
             const exitClass = direction === "left" ? "hidden-left" : "hidden-right";
 
             // Set the next card's content
             nextCard.textContent = cards[index];
-
-            // Prepare the next card for entrance (fade-in only)
-            nextCard.classList.remove("fade-in", "fade-out");
-            nextCard.classList.add("fade-in");
 
             // Animate the current card out (fade-out + movement)
             currentCard.classList.remove("fade-in");
             currentCard.classList.add(exitClass, "fade-out");
 
             setTimeout(() => {
+                // After the current card has exited, fade in the new card
+                nextCard.classList.remove("fade-out");
+                nextCard.classList.add("fade-in");
+
                 // Swap current and next card roles
                 currentCard.textContent = nextCard.textContent;
                 currentCard.classList.remove("hidden-left", "hidden-right", "fade-out");
@@ -190,7 +192,7 @@
 
                 nextCard.classList.remove("fade-in");
                 currentIndex = index;
-            }, 1000); // Transition duration
+            }, 1000); // Wait for fade-out + movement to complete
         }
 
         prevButton.addEventListener("click", () => {
