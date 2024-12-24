@@ -17,13 +17,13 @@
             align-items: center;
             height: 100vh;
             overflow: hidden;
-            position: relative;
         }
 
         #card-container {
             position: relative;
-            width: 66.6%; /* 1.33:1 aspect ratio */
-            height: 50%;
+            width: 90%; /* Use a percentage width for responsiveness */
+            max-width: 500px; /* Limit maximum width */
+            aspect-ratio: 1.33; /* 1.33:1 height-to-width ratio */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -38,12 +38,12 @@
             padding: 20px;
             line-height: 1.2; /* Reduced line spacing */
             box-sizing: border-box;
-            width: 90%;
-            height: 90%;
+            width: 100%; /* Fill the container */
+            height: 100%; /* Maintain the aspect ratio */
             position: absolute;
             opacity: 1;
             transform: translateX(0);
-            transition: transform 1s ease, opacity 1s ease; /* Synchronized fade and move */
+            transition: transform 1s ease, opacity 1s ease;
         }
 
         /* Outgoing Card */
