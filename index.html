@@ -22,9 +22,9 @@
 
         #deck-selection {
             display: flex;
-            flex-direction: column;
+            flex-direction: column; /* Stack buttons vertically */
             align-items: center;
-            gap: 20px; /* Vertical spacing between buttons */
+            gap: 25px; /* Add spacing between buttons */
         }
 
         .deck-button {
@@ -36,8 +36,8 @@
             color: white;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            width: 250px; /* 25% wider than before */
-            height: 50px; /* Uniform height for all buttons */
+            width: 250px; /* Ensure all buttons are the same width */
+            height: 50px; /* Ensure all buttons are the same height */
             text-align: center;
         }
 
@@ -88,7 +88,7 @@
         .nav-button {
             position: absolute;
             top: 50%;
-            transform: translateY(-50%);
+            transform: translate(-50%, -50%); /* Properly center chevrons */
             background: none;
             border: 2px solid white;
             border-radius: 50%;
@@ -164,7 +164,7 @@
 
         @media (max-width: 768px) {
             #deck-selection {
-                gap: 20px;
+                gap: 25px; /* Maintain vertical spacing on small screens */
             }
 
             .deck-button {
