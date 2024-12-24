@@ -3,10 +3,16 @@ self.addEventListener('install', (event) => {
         caches.open('black-cards-cache').then((cache) => {
             return cache.addAll([
                 './index.html',
-                './manifest.json'
+                './manifest.json',
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Cards_Against_Humanity_logo.png/512px-Cards_Against_Humanity_logo.png'
             ]);
         })
     );
+    console.log('Service Worker installed.');
+});
+
+self.addEventListener('activate', (event) => {
+    console.log('Service Worker activated.');
 });
 
 self.addEventListener('fetch', (event) => {
