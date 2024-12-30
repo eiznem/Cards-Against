@@ -82,16 +82,16 @@
 
         .nav-button {
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 50%; /* Centers the button vertically on the card */
+            transform: translateY(-50%); /* Adjusts the button to be perfectly centered vertically */
             background: none;
             border: 2px solid white;
-            border-radius: 50%;
+            border-radius: 50%; /* Makes the button circular */
             color: white;
             cursor: pointer;
             font-size: 1.5rem;
-            width: 50px;
-            height: 50px;
+            width: 50px; /* Circle width */
+            height: 50px; /* Circle height */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -99,11 +99,11 @@
         }
 
         .nav-button.left {
-            left: 10%;
+            left: 10%; /* Distance from the left edge of the card */
         }
 
         .nav-button.right {
-            right: 10%;
+            right: 10%; /* Distance from the right edge of the card */
         }
 
         .nav-button:active {
@@ -155,6 +155,15 @@
             left: 10px;
             font-size: 10px;
             color: rgba(255, 255, 255, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .nav-button.left {
+                left: 5%; /* Adjust left margin for smaller screens */
+            }
+            .nav-button.right {
+                right: 5%; /* Adjust right margin for smaller screens */
+            }
         }
     </style>
 </head>
