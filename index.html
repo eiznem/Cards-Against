@@ -142,6 +142,10 @@
             color: #e1fc25;
         }
 
+        .nav-button.clicked, #refresh-button.clicked {
+            color: #E1FC25; /* Color during click animation */
+        }
+
         /* Refresh button styling */
         #refresh-button {
             position: absolute;
@@ -317,18 +321,31 @@
             nextButton.classList.toggle("disabled", currentIndex === cards.length - 1);
         }
 
+        // Add a class for a brief visual effect when buttons are clicked
+        function handleButtonClick(button) {
+            button.classList.add("clicked");
+            setTimeout(() => button.classList.remove("clicked"), 200);
+        }
+
         // Previous button handler
         prevButton.addEventListener("click", () => {
-            if (currentIndex > 0) showCard(currentIndex - 1);
+            if (currentIndex > 0) {
+                handleButtonClick(prevButton);
+                showCard(currentIndex - 1);
+            }
         });
 
         // Next button handler
         nextButton.addEventListener("click", () => {
-            if (currentIndex < cards.length - 1) showCard(currentIndex + 1);
+            if (currentIndex < cards.length - 1) {
+                handleButtonClick(nextButton);
+                showCard(currentIndex + 1);
+            }
         });
 
         // Refresh button handler
         refreshButton.addEventListener("click", () => {
+            handleButtonClick(refreshButton);
             currentIndex = 0;
             location.reload(); // Reload page
         });
