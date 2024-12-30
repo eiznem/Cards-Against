@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading Decks...</title>
-    <meta name="theme-color" content="#000000">
-
+    <title>Select a Deck</title>
     <style>
         body {
             margin: 0;
-            font-family: 'Helvetica Neue', sans-serif;
-            font-weight: bold;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
             background: radial-gradient(circle, #111111, #222222, #444444);
             color: white;
             display: flex;
@@ -20,24 +17,28 @@
             overflow: hidden;
         }
 
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
         #deck-selection {
             display: flex;
-            flex-direction: column; /* Stack buttons vertically */
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
 
         .deck-button {
             background: linear-gradient(135deg, #6A11CB, #2575FC);
             border: none;
             border-radius: 10px;
-            padding: 10px 20px;
-            font-size: 0.9rem; /* Slightly smaller font size */
+            padding: 15px 30px;
+            font-size: 1.2rem;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            width: 250px; /* Ensure all buttons are the same width */
-            height: 50px; /* Ensure all buttons are the same height */
+            width: 250px;
             text-align: center;
         }
 
@@ -65,7 +66,7 @@
         }
 
         .card {
-            font-size: calc(2rem * var(--scale-factor, 1));
+            font-size: 1.5rem;
             text-align: center;
             padding: 20px;
             line-height: 1.3;
@@ -73,22 +74,16 @@
             width: 100%;
             height: 100%;
             position: absolute;
-            opacity: 1;
-            transition: opacity 0.6s ease;
-        }
-
-        .fade-out {
-            opacity: 0;
-        }
-
-        .fade-in {
-            opacity: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
         }
 
         .nav-button {
             position: absolute;
             top: 50%;
-            transform: translateY(-50%); /* Properly center chevrons */
+            transform: translateY(-50%);
             background: none;
             border: 2px solid white;
             border-radius: 50%;
@@ -161,26 +156,6 @@
             font-size: 10px;
             color: rgba(255, 255, 255, 0.25);
         }
-
-        @media (max-width: 768px) {
-            #deck-selection {
-                gap: 20px; /* Maintain vertical spacing on small screens */
-            }
-
-            .deck-button {
-                width: 200px;
-                padding: 10px 15px;
-                height: 50px;
-            }
-
-            .nav-button.left {
-                left: 5%;
-            }
-
-            .nav-button.right {
-                right: 5%;
-            }
-        }
     </style>
 </head>
 <body>
@@ -190,108 +165,97 @@
     </div>
 
     <div id="card-container" style="display: none;">
-        <div class="deck-label" id="deck-label">Loading...</div>
-        <div class="version-label" id="version-label">Version 1.1.0</div>
         <div id="current-card" class="card">Loading...</div>
-        <div id="next-card" class="card"></div>
+        <button id="prev-button" class="nav-button left" style="display: none;">&laquo;</button>
+        <button id="next-button" class="nav-button right" style="display: none;">&raquo;</button>
+        <button id="refresh-button" style="display: none;">&#x21bb;</button>
     </div>
 
-    <button class="nav-button left" id="prev-button" style="display: none;">&laquo;</button>
-    <button class="nav-button right" id="next-button" style="display: none;">&raquo;</button>
-
-    <button id="refresh-button" style="display: none;">
-        <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-        </svg>
-    </button>
-
     <script>
-        let cards = [];
-        let currentIndex = 0;
-
+        const deckButtons = document.getElementById("deck-buttons");
+        const cardContainer = document.getElementById("card-container");
         const currentCard = document.getElementById("current-card");
-        const nextCard = document.getElementById("next-card");
         const prevButton = document.getElementById("prev-button");
         const nextButton = document.getElementById("next-button");
         const refreshButton = document.getElementById("refresh-button");
-        const deckButtons = document.getElementById("deck-buttons");
-        const deckSelection = document.getElementById("deck-selection");
-        const cardContainer = document.getElementById("card-container");
-        const versionLabel = document.getElementById("version-label");
-        const deckLabel = document.getElementById("deck-label");
 
+        let cards = []; // Array to hold the cards
+        let currentIndex = 0; // Current index of the card
+
+        // Function to load the deck names dynamically from the decks.json file
         async function loadDecks() {
-            const availableDecks = ["VoApps Cards.csv", "Ex-Mormon Cards.csv", "Debt Collection Cards.csv"];
+            try {
+                const response = await fetch('decks.json'); // Fetch the JSON file
+                if (!response.ok) {
+                    throw new Error('Failed to fetch deck list');
+                }
+                const decks = await response.json(); // Parse the JSON
 
-            availableDecks.forEach((deck) => {
-                // Create a div to wrap the button
-                const buttonWrapper = document.createElement("div");
-                buttonWrapper.style.display = "flex"; // Optional: To control layout within the div
-                buttonWrapper.style.justifyContent = "center"; // Optional: Center the button inside the div
-                buttonWrapper.style.width = "100%"; // Optional: Adjust width
-                buttonWrapper.style.marginBottom = "25px"; // Add spacing between the button divs
+                // Create a button for each deck
+                decks.forEach(deck => {
+                    const buttonWrapper = document.createElement("div");
+                    buttonWrapper.style.marginBottom = "15px";
 
-                // Create the button
-                const button = document.createElement("button");
-                button.textContent = deck.replace(".csv", "");
-                button.className = "deck-button";
-                button.addEventListener("click", () => selectDeck(deck));
+                    const button = document.createElement("button");
+                    button.textContent = deck.replace(".csv", ""); // Remove .csv from display
+                    button.className = "deck-button";
+                    button.addEventListener("click", () => selectDeck(deck));
 
-                // Append the button to the wrapper, then the wrapper to the container
-                buttonWrapper.appendChild(button);
-                deckButtons.appendChild(buttonWrapper);
-            });
+                    buttonWrapper.appendChild(button);
+                    deckButtons.appendChild(buttonWrapper);
+                });
+            } catch (error) {
+                console.error("Error loading decks:", error);
+            }
         }
 
+        // Function to load the selected deck
         async function selectDeck(deck) {
-            const deckName = deck.replace(".csv", "");
-            document.title = `${deckName} - Black`;
-            deckLabel.textContent = deckName;
-            versionLabel.textContent = "Version 1.1.0";
-            deckSelection.style.display = "none";
-            cardContainer.style.display = "flex";
-            prevButton.style.display = "block";
-            nextButton.style.display = "block";
-            refreshButton.style.display = "block";
+            try {
+                const response = await fetch(deck); // Fetch the CSV file
+                if (!response.ok) {
+                    throw new Error('Failed to load deck');
+                }
+                const text = await response.text(); // Read the CSV content
+                cards = text.split("\n").map(line => line.trim()).filter(line => line); // Parse the cards
+                currentIndex = 0;
 
-            const response = await fetch(deck);
-            const text = await response.text();
-            cards = text.split("\n").map((card) => card.trim()).filter((card) => card !== "");
-            currentCard.textContent = cards[currentIndex];
+                // Hide the deck selection and show the card container
+                document.getElementById("deck-selection").style.display = "none";
+                cardContainer.style.display = "block";
+                prevButton.style.display = "block";
+                nextButton.style.display = "block";
+                refreshButton.style.display = "block";
+
+                // Display the first card
+                showCard(currentIndex);
+            } catch (error) {
+                console.error("Error selecting deck:", error);
+            }
         }
 
+        // Function to display a card
         function showCard(index) {
-            if (index < 0 || index >= cards.length) return;
-
-            currentCard.classList.add("fade-out");
-
-            setTimeout(() => {
-                currentCard.textContent = cards[index];
-                currentCard.classList.remove("fade-out");
-                currentCard.classList.add("fade-in");
-
-                setTimeout(() => {
-                    currentCard.classList.remove("fade-in");
-                }, 600);
-
-                currentIndex = index;
-            }, 600);
+            if (index < 0 || index >= cards.length) return; // Prevent out-of-bounds access
+            currentCard.textContent = cards[index]; // Update the card text
+            currentIndex = index; // Update the current index
         }
 
+        // Event listeners for navigation buttons
         prevButton.addEventListener("click", () => {
-            showCard(currentIndex - 1);
+            showCard(currentIndex - 1); // Show the previous card
         });
 
         nextButton.addEventListener("click", () => {
-            showCard(currentIndex + 1);
+            showCard(currentIndex + 1); // Show the next card
         });
 
         refreshButton.addEventListener("click", () => {
-            currentIndex = 0;
-            location.reload();
+            location.reload(); // Reload the page to reset
         });
 
-        loadDecks();
+        // Load the decks on page load
+        window.onload = loadDecks;
     </script>
 </body>
 </html>
