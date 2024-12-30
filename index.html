@@ -112,18 +112,25 @@
             background: none;
             border: none;
             color: white;
-            font-size: 2rem;
+            font-size: 1.5rem; /* Reduce size */
             cursor: pointer;
+            transition: color 0.3s ease;
         }
 
         /* Left navigation button */
         .nav-button.left {
-            left: 10%;
+            left: 5%; /* Centered between card and screen edge */
         }
 
         /* Right navigation button */
         .nav-button.right {
-            right: 10%;
+            right: 5%; /* Centered between card and screen edge */
+        }
+
+        /* Disabled navigation button */
+        .nav-button.disabled {
+            color: gray;
+            cursor: not-allowed;
         }
 
         /* Refresh button styling */
@@ -136,6 +143,12 @@
             color: white;
             font-size: 2rem;
             cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        /* Active state for buttons */
+        .nav-button:active, #refresh-button:active {
+            color: #6A11CB;
         }
 
         /* Version and deck labels */
@@ -258,6 +271,9 @@
                 nextButton.style.display = "block";
                 refreshButton.style.display = "block";
 
+                // Update button states
+                updateNavButtons();
+
                 // Show the first card
                 showCard(currentIndex);
             } catch (error) {
@@ -285,17 +301,26 @@
                 }, 600);
 
                 currentIndex = index; // Update current index
+
+                // Update button states
+                updateNavButtons();
             }, 600); // Wait for fade-out before showing next card
+        }
+
+        // Update navigation button states
+        function updateNavButtons() {
+            prevButton.classList.toggle("disabled", currentIndex === 0);
+            nextButton.classList.toggle("disabled", currentIndex === cards.length - 1);
         }
 
         // Previous button handler
         prevButton.addEventListener("click", () => {
-            showCard(currentIndex - 1);
+            if (currentIndex > 0) showCard(currentIndex - 1);
         });
 
         // Next button handler
         nextButton.addEventListener("click", () => {
-            showCard(currentIndex + 1);
+            if (currentIndex < cards.length - 1) showCard(currentIndex + 1);
         });
 
         // Refresh button handler
