@@ -78,6 +78,12 @@
             justify-content: center;
             align-items: center;
             color: white;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .card.visible {
+            opacity: 1;
         }
 
         .nav-button {
@@ -164,6 +170,10 @@
             .nav-button.right {
                 right: 5%; /* Adjust right margin for smaller screens */
             }
+            #refresh-button {
+                top: 15px; /* Adjust for smaller screens */
+                left: 15px; /* Adjust for smaller screens */
+            }
         }
     </style>
 </head>
@@ -174,7 +184,9 @@
     </div>
 
     <div id="card-container" style="display: none;">
-        <div id="current-card" class="card">Loading...</div>
+        <div id="current-card" class="card visible">Loading...</div>
+        <div class="deck-label" id="deck-label">Deck: </div>
+        <div class="version-label" id="version-label">Version: 1.0</div>
         <button id="prev-button" class="nav-button left" style="display: none;">&laquo;</button>
         <button id="next-button" class="nav-button right" style="display: none;">&raquo;</button>
         <button id="refresh-button" style="display: none;">&#x21bb;</button>
@@ -187,6 +199,8 @@
         const prevButton = document.getElementById("prev-button");
         const nextButton = document.getElementById("next-button");
         const refreshButton = document.getElementById("refresh-button");
+        const deckLabel = document.getElementById("deck-label");
+        const versionLabel = document.getElementById("version-label");
 
         let cards = []; // Array to hold the cards
         let currentIndex = 0; // Current index of the card
@@ -236,6 +250,10 @@
                 nextButton.style.display = "block";
                 refreshButton.style.display = "block";
 
+                // Update labels
+                deckLabel.textContent = `Deck: ${deck.replace('.csv', '')}`;
+                versionLabel.textContent = "Version: 1.0";
+
                 // Display the first card
                 showCard(currentIndex);
             } catch (error) {
@@ -246,25 +264,14 @@
         // Function to display a card
         function showCard(index) {
             if (index < 0 || index >= cards.length) return; // Prevent out-of-bounds access
+
+            const previousCard = document.querySelector(".card.visible");
+            if (previousCard) previousCard.classList.remove("visible"); // Fade out current card
+
             currentCard.textContent = cards[index]; // Update the card text
+            currentCard.classList.add("visible"); // Fade in new card
             currentIndex = index; // Update the current index
         }
 
         // Event listeners for navigation buttons
-        prevButton.addEventListener("click", () => {
-            showCard(currentIndex - 1); // Show the previous card
-        });
-
-        nextButton.addEventListener("click", () => {
-            showCard(currentIndex + 1); // Show the next card
-        });
-
-        refreshButton.addEventListener("click", () => {
-            location.reload(); // Reload the page to reset
-        });
-
-        // Load the decks on page load
-        window.onload = loadDecks;
-    </script>
-</body>
-</html>
+        prev
