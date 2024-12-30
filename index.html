@@ -79,7 +79,7 @@
         /* Card styling */
         .card {
             font-size: 1.8rem; /* Adjust font size for readability */
-            text-align: left; /* To align text to both left and right edges, use "justify". */
+            text-align: justify; /* Align text to both left and right edges */
             padding: 20px; /* Spacing inside the card */
             line-height: 1.3; /* Space between lines */
             box-sizing: border-box; /* Include padding in width and height */
@@ -110,17 +110,10 @@
             top: 50%;
             transform: translateY(-50%);
             background: none;
-            border: 2px solid white;
-            border-radius: 50%;
+            border: none;
             color: white;
+            font-size: 2rem;
             cursor: pointer;
-            font-size: 1.5rem;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         /* Left navigation button */
@@ -133,42 +126,16 @@
             right: 10%;
         }
 
-        /* Active and hover states for navigation buttons */
-        .nav-button:active {
-            background: linear-gradient(135deg, #6A11CB, #2575FC);
-            border-color: #2575FC;
-        }
-
-        .nav-button:hover {
-            color: #AAAAAA;
-            border-color: #AAAAAA;
-        }
-
         /* Refresh button styling */
         #refresh-button {
             position: absolute;
             top: 10px;
             left: 10px;
-            background: linear-gradient(135deg, #6A11CB, #2575FC);
-            border: 2px solid white;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
             cursor: pointer;
-        }
-
-        /* Refresh button icon */
-        .button-icon {
-            width: 60%;
-            height: 60%;
-            fill: none;
-            stroke: white;
-            stroke-width: 2.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
         }
 
         /* Version and deck labels */
@@ -222,14 +189,10 @@
         <div id="next-card" class="card"></div>
     </div>
 
-    <button class="nav-button left" id="prev-button" style="display: none;">&laquo;</button>
-    <button class="nav-button right" id="next-button" style="display: none;">&raquo;</button>
+    <button class="nav-button left" id="prev-button" style="display: none;">◀</button>
+    <button class="nav-button right" id="next-button" style="display: none;">▶</button>
 
-    <button id="refresh-button" style="display: none;">
-        <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
-        </svg>
-    </button>
+    <button id="refresh-button" style="display: none;">↻</button>
 
     <script>
         let cards = []; // Array to hold the cards
