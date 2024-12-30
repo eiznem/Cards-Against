@@ -79,7 +79,7 @@
         /* Card styling */
         .card {
             font-size: 2.0rem; /* Adjust font size for readability */
-            text-align: Left; /* Align text to both left and right edges */
+            text-align: left; /* Align text to both left and right edges */
             padding: 30px; /* Spacing inside the card */
             line-height: 1.5; /* Space between lines */
             box-sizing: border-box; /* Include padding in width and height */
@@ -216,8 +216,8 @@
     <button id="refresh-button" style="display: none;">↻</button>
 
     <script>
-        let cards = []; // Array to hold the cards
-        let currentIndex = 0; // Current index of the card
+        let cards = [];
+        let currentIndex = 0;
 
         const currentCard = document.getElementById("current-card");
         const nextCard = document.getElementById("next-card");
@@ -230,22 +230,19 @@
         const versionLabel = document.getElementById("version-label");
         const deckLabel = document.getElementById("deck-label");
 
-        // Load the deck names dynamically from a JSON file
         async function loadDecks() {
             try {
-                const response = await fetch('decks.json'); // Fetch deck names from decks.json
+                const response = await fetch('decks.json');
                 if (!response.ok) {
                     throw new Error('Failed to fetch deck list');
                 }
                 const decks = await response.json();
-
-                // Create buttons for each deck
                 decks.forEach(deck => {
                     const buttonWrapper = document.createElement("div");
                     buttonWrapper.style.marginBottom = "15px";
 
                     const button = document.createElement("button");
-                    button.textContent = deck.replace(".csv", ""); // Remove .csv extension
+                    button.textContent = deck.replace(".csv", "");
                     button.className = "deck-button";
                     button.addEventListener("click", () => selectDeck(deck));
 
@@ -257,7 +254,6 @@
             }
         }
 
-        // Select a deck and load its content
         async function selectDeck(deck) {
             try {
                 const response = await fetch(deck);
@@ -267,8 +263,6 @@
                 const text = await response.text();
                 cards = text.split("\n").map(line => line.trim()).filter(line => line);
                 currentIndex = 0;
-
-                // Hide deck selection and show the card container
                 document.getElementById("deck-selection").style.display = "none";
                 const deckName = deck.replace(".csv", "");
                 document.title = `${deckName} - Black`;
@@ -278,56 +272,43 @@
                 prevButton.style.display = "block";
                 nextButton.style.display = "block";
                 refreshButton.style.display = "block";
-
-                // Update button states
                 updateNavButtons();
-
-                // Show the first card
                 showCard(currentIndex);
             } catch (error) {
                 console.error("Error selecting deck:", error);
             }
         }
 
-        // Display a card
         function showCard(index) {
-            if (index < 0 || index >= cards.length) return; // Ensure index is within bounds
-
-            // Fade out the current card
+            if (index < 0 || index >= cards.length) return;
             const previousCard = document.querySelector(".card.visible");
             if (previousCard) previousCard.classList.remove("visible");
-
             currentCard.classList.add("fade-out");
 
             setTimeout(() => {
-                currentCard.textContent = cards[index]; // Update card text
+                currentCard.textContent = cards[index];
                 currentCard.classList.remove("fade-out");
                 currentCard.classList.add("fade-in");
 
                 setTimeout(() => {
-                    currentCard.classList.remove("fade-in"); // End fade-in transition
+                    currentCard.classList.remove("fade-in");
                 }, 600);
 
-                currentIndex = index; // Update current index
-
-                // Update button states
+                currentIndex = index;
                 updateNavButtons();
-            }, 600); // Wait for fade-out before showing next card
+            }, 600);
         }
 
-        // Update navigation button states
         function updateNavButtons() {
             prevButton.classList.toggle("disabled", currentIndex === 0);
             nextButton.classList.toggle("disabled", currentIndex === cards.length - 1);
         }
 
-        // Add a class for a brief visual effect when buttons are clicked
         function handleButtonClick(button) {
             button.classList.add("clicked");
             setTimeout(() => button.classList.remove("clicked"), 200);
         }
 
-        // Previous button handler
         prevButton.addEventListener("click", () => {
             if (currentIndex > 0) {
                 handleButtonClick(prevButton);
@@ -335,7 +316,6 @@
             }
         });
 
-        // Next button handler
         nextButton.addEventListener("click", () => {
             if (currentIndex < cards.length - 1) {
                 handleButtonClick(nextButton);
@@ -343,14 +323,12 @@
             }
         });
 
-        // Refresh button handler
         refreshButton.addEventListener("click", () => {
             handleButtonClick(refreshButton);
             currentIndex = 0;
-            location.reload(); // Reload page
+            location.reload();
         });
 
-        // Load decks on page load
         window.onload = loadDecks;
     </script>
 </body>
