@@ -38,7 +38,7 @@
         /* Styling for deck buttons */
         .deck-button {
             background: linear-gradient(135deg, #6A11CB, #2575FC);
-            border: 1.5px solid white;
+            border: 1px solid white;
             border-radius: 10px;
             padding: 10px 20px;
             font-size: 0.9rem;
@@ -138,8 +138,8 @@
             color: #2575FC;
         }
 
-        .nav-button:active, #refresh-button:active {
-            color: #e1fc25;
+        .nav-button.clicked, #refresh-button.clicked {
+            color: #E1FC25;
         }
 
         /* Refresh button styling */
@@ -316,6 +316,11 @@
             prevButton.classList.toggle("disabled", currentIndex === 0);
             nextButton.classList.toggle("disabled", currentIndex === cards.length - 1);
         }
+
+        // Previous button handler
+        prevButton.addEventListener("click", () => {
+            if (currentIndex
+
 
         // Previous button handler
         prevButton.addEventListener("click", () => {
