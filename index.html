@@ -38,8 +38,6 @@
         /* Styling for deck buttons */
         .deck-button {
             background: linear-gradient(135deg, #6A11CB, #2575FC);
-            /* background: radial-gradient(ellipse at top, #6A11CB, transparent),
-            radial-gradient(ellipse at bottom, #2575FC, transparent); */
             border: 1px solid white;
             border-radius: 10px;
             padding: 10px 20px;
@@ -114,7 +112,7 @@
             background: none;
             border: none;
             color: white;
-            font-size: 1.5rem; /* Reduce size */
+            font-size: 1.5rem; /* Adjusted size */
             cursor: pointer;
             transition: color 0.3s ease;
         }
@@ -135,6 +133,15 @@
             cursor: not-allowed;
         }
 
+        /* Hover and active states for navigation and refresh buttons */
+        .nav-button:hover:not(.disabled), #refresh-button:hover {
+            color: #2575FC;
+        }
+
+        .nav-button:active, #refresh-button:active {
+            color: #6A11CB;
+        }
+
         /* Refresh button styling */
         #refresh-button {
             position: absolute;
@@ -146,11 +153,6 @@
             font-size: 2rem;
             cursor: pointer;
             transition: color 0.3s ease;
-        }
-
-        /* Active state for buttons */
-        .nav-button:active, #refresh-button:active {
-            color: #CCFF00;
         }
 
         /* Version and deck labels */
